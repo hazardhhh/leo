@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>com.hhh</groupId>
-        <artifactId>yeb</artifactId>
+        <artifactId>leo</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>com.hhh</groupId>
-    <artifactId>yeb-server</artifactId>
+    <artifactId>leo-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
