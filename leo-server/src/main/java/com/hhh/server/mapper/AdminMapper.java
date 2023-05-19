@@ -1,14 +1,14 @@
 package com.hhh.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hhh.server.pojo.Admin;
+import com.hhh.server.pojo.AdminRes;
 
 /**
- * Mapper 接口
+ * AdminMapper
  *
  * @author hhh
  * @since 2022-01-19
  */
-public interface AdminMapper extends BaseMapper<Admin> {
+public interface AdminMapper extends BaseMapper<AdminRes> {
 
 }

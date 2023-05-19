@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.hhh.server.config.CustomAuthorityDeserializer;
+import com.hhh.server.config.security.component.CustomAuthorityDeserializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
@@ -29,8 +29,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("t_admin")
-@ApiModel(value = "Admin对象", description = "")
-public class Admin implements Serializable, UserDetails {
+@ApiModel(value = "Admin实体类", description = "")
+public class AdminRes implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 1L;
 

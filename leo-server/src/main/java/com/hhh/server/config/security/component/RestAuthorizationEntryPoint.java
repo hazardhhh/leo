@@ -1,7 +1,7 @@
 package com.hhh.server.config.security.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhh.server.pojo.RespBean;
+import com.hhh.server.pojo.RespRes;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class RestAuthorizationEntryPoint implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        RespBean bean = RespBean.error("尚未登录，请登录！");
+        RespRes bean = RespRes.error("尚未登录，请登录！");
         bean.setCode(401);
         out.write(new ObjectMapper().writeValueAsString(bean));
         out.flush();

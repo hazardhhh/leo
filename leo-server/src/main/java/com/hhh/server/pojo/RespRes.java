@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RespBean {
+public class RespRes {
     private long code;
     private String message;
     private Object obj;
@@ -25,8 +25,8 @@ public class RespBean {
      * @param message
      * @return
      */
-    public static RespBean success(String message) {
-        return new RespBean(200, message, null);
+    public static RespRes success(String message) {
+        return new RespRes(200, message, null);
     }
 
     /**
@@ -36,8 +36,8 @@ public class RespBean {
      * @param obj
      * @return
      */
-    public static RespBean success(String message, Object obj) {
-        return new RespBean(200, message, obj);
+    public static RespRes success(String message, Object obj) {
+        return new RespRes(200, message, obj);
     }
 
     /**
@@ -46,8 +46,8 @@ public class RespBean {
      * @param message
      * @return
      */
-    public static RespBean error(String message) {
-        return new RespBean(500, message, null);
+    public static RespRes error(String message) {
+        return new RespRes(500, message, null);
     }
 
     /**
@@ -57,7 +57,7 @@ public class RespBean {
      * @param obj
      * @return
      */
-    public static RespBean error(String message, Object obj) {
-        return new RespBean(500, message, obj);
+    public static RespRes error(String message, Object obj) {
+        return new RespRes(500, message, obj);
     }
 }

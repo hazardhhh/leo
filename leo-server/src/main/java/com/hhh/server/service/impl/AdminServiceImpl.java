@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hhh.server.config.security.component.JwtTokenUtil;
 import com.hhh.server.mapper.AdminMapper;
-import com.hhh.server.pojo.Admin;
-import com.hhh.server.pojo.RespBean;
+import com.hhh.server.pojo.AdminRes;
+import com.hhh.server.pojo.RespRes;
 import com.hhh.server.service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,17 +20,16 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * 服务实现类
+ * AdminServiceImpl实现类
  *
  * @author hhh
  * @since 2022-01-19
  */
 @Service
-public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
+public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminRes> implements IAdminService {
 
   @Autowired
   private AdminMapper adminMapper;
@@ -57,18 +56,18 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
    * @return
    */
   @Override
-  public RespBean login(String username, String password, String code, HttpServletRequest request) {
+  public RespRes login(String username, String password, String code, HttpServletRequest request) {
     String captcha = (String) request.getSession().getAttribute("captcha");
     if (StringUtils.isBlank(code) || !captcha.equalsIgnoreCase(code)) {
-      return RespBean.error("验证码输入错误, 请重新输入！");
+      return RespRes.error("验证码输入错误, 请重新输入！");
     }
     // 登录
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     if (null == userDetails || !passwordEncoder.matches(password, userDetails.getPassword())) {
-      return RespBean.error("用户名或密码不正确");
+      return RespRes.error("用户名或密码不正确");
     }
     if (!userDetails.isEnabled()) {
-      return RespBean.error("账号被禁用, 请联系管理员!");
+      return RespRes.error("账号被禁用, 请联系管理员!");
     }
     // 更新security登录用户对象
     UsernamePasswordAuthenticationToken authenticationToken =
@@ -80,7 +79,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     Map<String, String> tokenMap = new HashMap<>();
     tokenMap.put("token", token);
     tokenMap.put("tokenHead", tokenHead);
-    return RespBean.success("登录成功", tokenMap);
+    return RespRes.success("登录成功", tokenMap);
   }
 
   /**
@@ -90,9 +89,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
    * @return
    */
   @Override
-  public Admin getAdminByUserName(String username) {
+  public AdminRes getAdminByUserName(String username) {
     return adminMapper.selectOne(
-        new QueryWrapper<Admin>().eq("username", username).eq("enabled", true));
+        new QueryWrapper<AdminRes>().eq("username", username).eq("enabled", true));
   }
 
   /**
@@ -104,18 +103,18 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
    * @return
    */
   @Override
-  public RespBean updateAdminPassword(String oldPass, String pass, Integer adminId) {
-    Admin admin = adminMapper.selectById(adminId);
+  public RespRes updateAdminPassword(String oldPass, String pass, Integer adminId) {
+    AdminRes adminRes = adminMapper.selectById(adminId);
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     // 判断旧密码是否正确
-    if (encoder.matches(oldPass, admin.getPassword())) {
-      admin.setPassword(encoder.encode(pass));
-      int result = adminMapper.updateById(admin);
+    if (encoder.matches(oldPass, adminRes.getPassword())) {
+      adminRes.setPassword(encoder.encode(pass));
+      int result = adminMapper.updateById(adminRes);
       if (1 == result) {
-        return RespBean.success("更新成功！");
+        return RespRes.success("更新成功！");
       }
     }
-    return RespBean.error("更新失败！");
+    return RespRes.error("更新失败！");
   }
 
 //  /**

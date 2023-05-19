@@ -1,8 +1,9 @@
 package com.hhh.server.controller;
 
-import com.hhh.server.pojo.Admin;
-import com.hhh.server.pojo.RespBean;
+import com.hhh.server.pojo.AdminRes;
+import com.hhh.server.pojo.RespRes;
 //import com.hhh.server.utils.FastDFSUtils;
+import com.hhh.server.pojo.UpdatePwdReq;
 import com.hhh.server.service.IAdminService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 /**
  * 个人中心
  *
@@ -24,31 +23,29 @@ import java.util.Map;
  */
 @RestController
 public class AdminInfoController {
+
     @Autowired
     private IAdminService adminService;
 
     @ApiOperation(value = "更新当前用户信息")
     @PutMapping("/admin/info")
-    public RespBean updateAdmin(@RequestBody Admin admin, Authentication authentication) {
+    public RespRes updateAdmin(@RequestBody AdminRes adminRes, Authentication authentication) {
         // 更新成功，重新构建Authentication对象
-        if (adminService.updateById(admin)) {
+        if (adminService.updateById(adminRes)) {
             // 1.用户对象 2.凭证（密码） 3.用户角色
-            SecurityContextHolder.getContext()
-                    .setAuthentication(
-                            new UsernamePasswordAuthenticationToken(
-                                    admin, null, authentication.getAuthorities()));
-            return RespBean.success("更新成功!");
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(adminRes, null, authentication.getAuthorities()));
+            return RespRes.success("更新成功!");
         }
-        return RespBean.error("更新失败!");
+        return RespRes.error("更新失败!");
 
     }
 
     @ApiOperation(value = "更新用户密码")
     @PutMapping("/admin/updatePwd")
-    public RespBean updateAdminPassword(@RequestBody Map<String, Object> info) {
-        String oldPass = (String) info.get("oldPass");
-        String pass = (String) info.get("pass");
-        Integer adminId = (Integer) info.get("adminId");
+    public RespRes updateAdminPassword(@RequestBody UpdatePwdReq updatePwdReq) {
+        String oldPass = updatePwdReq.getOldPass();
+        String pass = updatePwdReq.getPass();
+        Integer adminId = updatePwdReq.getAdminId();
         return adminService.updateAdminPassword(oldPass, pass, adminId);
 
     }

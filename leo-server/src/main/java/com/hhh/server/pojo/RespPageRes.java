@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RespPageBean {
+public class RespPageRes {
 
     /**
      * 总条数

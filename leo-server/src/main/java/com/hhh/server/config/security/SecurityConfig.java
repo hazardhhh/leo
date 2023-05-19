@@ -1,7 +1,7 @@
 package com.hhh.server.config.security;
 
 import com.hhh.server.config.security.component.*;
-import com.hhh.server.pojo.Admin;
+import com.hhh.server.pojo.AdminRes;
 import com.hhh.server.service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +30,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private IAdminService adminService;
+
     @Autowired
     private RestAuthorizationEntryPoint restAuthenticationEntryPoint;
+
     @Autowired
     private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
+
     @Autowired
     private CustomFilter customFilter;
+
     @Autowired
     private CustomUrlDecisionManager customUrlDecisionManager;
 
@@ -116,10 +120,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsService userDetailsService() {
         // 获取登录用户信息
         return username -> {
-            Admin admin = adminService.getAdminByUserName(username);
-            if (null != admin) {
+            AdminRes adminRes = adminService.getAdminByUserName(username);
+            if (null != adminRes) {
 //                admin.setRoles(adminService.getRoles(admin.getId()));
-                return admin;
+                return adminRes;
             }
             //      return null;
             throw new UsernameNotFoundException("用户名或密码不正确");

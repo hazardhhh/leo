@@ -1,4 +1,4 @@
-package com.hhh.server.config;
+package com.hhh.server.config.security.component;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

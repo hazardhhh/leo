@@ -1,8 +1,8 @@
 package com.hhh.server.controller;
 
-import com.hhh.server.pojo.Admin;
-import com.hhh.server.pojo.AdminLoginParam;
-import com.hhh.server.pojo.RespBean;
+import com.hhh.server.pojo.AdminRes;
+import com.hhh.server.pojo.AdminLoginReq;
+import com.hhh.server.pojo.RespRes;
 import com.hhh.server.service.IAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,30 +30,30 @@ public class LoginController {
 
     @ApiOperation(value = "登录之后返回token")
     @PostMapping("/login")
-    public RespBean login(@RequestBody AdminLoginParam adminLoginParam, HttpServletRequest request) {
+    public RespRes login(@RequestBody AdminLoginReq adminLoginReq, HttpServletRequest request) {
         return adminService.login(
-                adminLoginParam.getUsername(),
-                adminLoginParam.getPassword(),
-                adminLoginParam.getCode(),
+                adminLoginReq.getUsername(),
+                adminLoginReq.getPassword(),
+                adminLoginReq.getCode(),
                 request);
     }
 
     @ApiOperation(value = "获取当前登录用户的信息")
     @GetMapping("/admin/info")
-    public Admin getAdminInfo(Principal principal) {
+    public AdminRes getAdminInfo(Principal principal) {
         if (null == principal) {
             return null;
         }
         String username = principal.getName();
-        Admin admin = adminService.getAdminByUserName(username);
-        admin.setPassword(null);
-        return admin;
+        AdminRes adminRes = adminService.getAdminByUserName(username);
+        adminRes.setPassword(null);
+        return adminRes;
     }
 
     @ApiOperation(value = "退出登录")
     @PostMapping("/logout")
-    public RespBean logout() {
-        return RespBean.success("注销成功!");
+    public RespRes logout() {
+        return RespRes.success("注销成功!");
     }
 
 }
