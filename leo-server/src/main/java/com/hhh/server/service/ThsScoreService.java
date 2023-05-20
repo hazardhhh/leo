@@ -12,7 +12,24 @@ import java.util.List;
  */
 public interface ThsScoreService {
 
+    /**
+     * 获取所有结果
+     *
+     * @return
+     */
     public List<ThsScoreRes> getThsScoreResult();
 
-    public RespRes updateThsScore();
+    /**
+     * 更新股息率近12个月
+     *
+     * @return
+     */
+    public RespRes updateThsScoreDividend12Data();
+
+    /**
+     * 更新股息率2021，2020，过去3年平均值
+     *
+     * @return
+     */
+    public RespRes updateThsScoreDividendData();
 }

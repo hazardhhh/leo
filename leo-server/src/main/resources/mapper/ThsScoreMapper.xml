@@ -19,8 +19,12 @@
         select * from ths_score
     </select>
 
-    <update id="updateThsScore">
+    <update id="updateThsScoreDividend12">
         update ths_score set dividend_12 = #{dividend12} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreDividend">
+        update ths_score set dividend_2021 = #{dividend2021}, dividend_2020 = #{dividend2020}, dividend_average_3 = #{dividendAverage3} where stock_code = #{stockCode}
     </update>
 
 </mapper>
