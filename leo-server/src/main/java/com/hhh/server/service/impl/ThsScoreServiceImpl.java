@@ -63,7 +63,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         int tryCount = 3;
         while (tryCount > 0) {
             loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
-            log.info("ThsScoreServiceImpl | updateThsScore | loginResultRet = {}", loginResultRet);
+            log.info("ThsScoreServiceImpl | updateThsScoreDividend12Data | loginResultRet = {}", loginResultRet);
             if (loginResultRet == 0) {
                 try {
                     //获取所有股票代码
@@ -83,11 +83,11 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                     for (int i = 0; i < tablesDividend12.size(); i++) {
                         JSONObject tableObj = tablesDividend12.getJSONObject(i);
                         JSONObject table = tableObj.getJSONObject("table");
-                        BigDecimal dividend = table.getJSONArray("ths_dividend_rate_12m_stock").getBigDecimal(0);
-                        if (dividend == null) {
+                        BigDecimal dividend12 = table.getJSONArray("ths_dividend_rate_12m_stock").getBigDecimal(0);
+                        if (dividend12 == null) {
                             dividend12Rates.add(0.0000);
                         } else {
-                            dividend12Rates.add(dividend.doubleValue());
+                            dividend12Rates.add(dividend12.doubleValue());
                         }
                     }
                     //股息率近12个月
@@ -96,25 +96,26 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                         // 创建 DecimalFormat 对象，指定保留小数点后 4 位
                         DecimalFormat df = new DecimalFormat("0.0000");
                         String formattedDividend12Result = df.format(dividend12RateResult);
+                        log.info("ThsScoreServiceImpl | updateThsScoreDividend12Data | 股息率近12月 = {}", formattedDividend12Result);
                         thsScoreMapper.updateThsScoreDividend12(stockCodes[i], formattedDividend12Result);
                         if (thsScoreMapper.updateThsScoreDividend12(stockCodes[i], formattedDividend12Result) == 0) {
                             return RespRes.success("更新失败");
                         }
                     }
                 } catch (Exception e) {
-                    log.error("ThsScoreServiceImpl | updateThsScore | Exception", e);
+                    log.error("ThsScoreServiceImpl | updateThsScoreDividend12Data | Exception", e);
                 }
                 JDIBridge.THS_iFinDLogout();
-                log.info("ThsScoreServiceImpl updateThsScore THS_iFinDLogout");
+                log.info("ThsScoreServiceImpl updateThsScoreDividend12Data THS_iFinDLogout");
                 break;
             } else {
-                log.info("ThsScoreServiceImpl | updateThsScore | LoginFailed | loginResultRet = {}", loginResultRet);
+                log.info("ThsScoreServiceImpl | updateThsScoreDividend12Data | LoginFailed | loginResultRet = {}", loginResultRet);
                 tryCount--;
             }
         }
 
         if (tryCount == 0) {
-            log.info("Failed to login after 3 tries.");
+            log.info("ThsScoreServiceImpl updateThsScoreDividend12Data Failed to login after 3 tries.");
         }
 
         return RespRes.success("更新成功");
@@ -133,7 +134,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         int tryCount = 3;
         while (tryCount > 0) {
             loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
-            log.info("ThsScoreServiceImpl | updateThsScore | loginResultRet = {}", loginResultRet);
+            log.info("ThsScoreServiceImpl | updateThsScoreDividendData | loginResultRet = {}", loginResultRet);
             if (loginResultRet == 0) {
                 try {
                     //获取所有股票代码
@@ -185,26 +186,256 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                         String formattedDividend2020RateResult = df.format(dividend2020RateResult);
                         Double dividendAverage3 = (Double.parseDouble(thsScoreMapper.getThsScoreResult().get(i).getDividend2022()) + Double.parseDouble(formattedDividend2021RateResult) + Double.parseDouble(formattedDividend2020RateResult))/3;
                         String formattedDividendAverage3Result = df.format(dividendAverage3);
-                        log.info("ThsScoreServiceImpl | updateThsScore | 股息率2021 = {} | 股息率2020 = {} | 股息率过去三年平均值 = {}", formattedDividend2021RateResult, formattedDividend2020RateResult, formattedDividendAverage3Result);
+                        log.info("ThsScoreServiceImpl | updateThsScoreDividendData | 股息率2021 = {} | 股息率2020 = {} | 股息率过去三年平均值 = {}", formattedDividend2021RateResult, formattedDividend2020RateResult, formattedDividendAverage3Result);
                         thsScoreMapper.updateThsScoreDividend(stockCodes[i], formattedDividend2021RateResult, formattedDividend2020RateResult, formattedDividendAverage3Result);
                         if (thsScoreMapper.updateThsScoreDividend(stockCodes[i], formattedDividend2021RateResult, formattedDividend2020RateResult, formattedDividendAverage3Result) == 0) {
                             return RespRes.success("更新失败");
                         }
                     }
                 } catch (Exception e) {
-                    log.error("ThsScoreServiceImpl | updateThsScore | Exception", e);
+                    log.error("ThsScoreServiceImpl | updateThsScoreDividendData | Exception", e);
                 }
                 JDIBridge.THS_iFinDLogout();
-                log.info("ThsScoreServiceImpl updateThsScore THS_iFinDLogout");
+                log.info("ThsScoreServiceImpl updateThsScoreDividendData THS_iFinDLogout");
                 break;
             } else {
-                log.info("ThsScoreServiceImpl | updateThsScore | LoginFailed | loginResultRet = {}", loginResultRet);
+                log.info("ThsScoreServiceImpl | updateThsScoreDividendData | LoginFailed | loginResultRet = {}", loginResultRet);
                 tryCount--;
             }
         }
 
         if (tryCount == 0) {
-            log.info("Failed to login after 3 tries.");
+            log.info("ThsScoreServiceImpl updateThsScoreDividendData Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("更新成功");
+    }
+
+    /**
+     * 更新PB最新
+     *
+     * @return
+     */
+    @Override
+    public RespRes updateThsScorePBData() {
+        log.info("ThsScoreServiceImpl | updateThsScorePBData | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | updateThsScorePBData | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    //获取所有股票代码
+                    List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
+                    String[] stockCodes = thsScoreResList.stream()
+                            .map(ThsScoreRes::getStockCode)
+                            .toArray(String[]::new);
+                    String stockCodesStr = String.join(",", stockCodes);
+                    //PB最新 100报告截止日期 101报告公告日期
+                    String PBResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_pb_latest_stock", new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ",100");
+                    JSONObject jsonObjectPB = JSON.parseObject(PBResult);
+                    JSONArray tablesPB = jsonObjectPB.getJSONArray("tables");
+                    JSONArray PBRates = new JSONArray();
+                    if (tablesPB.size() == 0) {
+                        return RespRes.error("更新失败");
+                    }
+                    for (int i = 0; i < tablesPB.size(); i++) {
+                        JSONObject tableObj = tablesPB.getJSONObject(i);
+                        JSONObject table = tableObj.getJSONObject("table");
+                        BigDecimal PB = table.getJSONArray("ths_pb_latest_stock").getBigDecimal(0);
+                        if (PB == null) {
+                            PBRates.add(0.0000);
+                        } else {
+                            PBRates.add(PB.doubleValue());
+                        }
+                    }
+                    //PB最新
+                    for (int i = 0; i < PBRates.size(); i++) {
+                        Double PBRateResult = PBRates.getDouble(i);
+                        // 创建 DecimalFormat 对象，指定保留小数点后 4 位
+                        DecimalFormat df = new DecimalFormat("0.0000");
+                        String formattedPBResult = df.format(PBRateResult);
+                        log.info("ThsScoreServiceImpl | updateThsScorePBData | PB最新 = {}", formattedPBResult);
+                        thsScoreMapper.updateThsScorePB(stockCodes[i], formattedPBResult);
+                        if (thsScoreMapper.updateThsScorePB(stockCodes[i], formattedPBResult) == 0) {
+                            return RespRes.success("更新失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | updateThsScorePBData | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl updateThsScorePBData THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | updateThsScorePBData | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl updateThsScorePBData Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("更新成功");
+    }
+
+    /**
+     * 更新周换手率
+     *
+     * @return
+     */
+    @Override
+    public RespRes updateThsScoreTurnoverRateByWeekData() {
+        log.info("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    //获取所有股票代码
+                    List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
+                    String[] stockCodes = thsScoreResList.stream()
+                            .map(ThsScoreRes::getStockCode)
+                            .toArray(String[]::new);
+                    String stockCodesStr = String.join(",", stockCodes);
+                    //更新周换手率
+                    String turnoverRateByWeekResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_turnover_ratio_w_stock", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    JSONObject jsonObjectTurnoverRateByWeek = JSON.parseObject(turnoverRateByWeekResult);
+                    JSONArray tablesTurnoverRateByWeek = jsonObjectTurnoverRateByWeek.getJSONArray("tables");
+                    JSONArray turnoverRateByWeekRates = new JSONArray();
+                    if (tablesTurnoverRateByWeek.size() == 0) {
+                        return RespRes.error("更新失败");
+                    }
+                    for (int i = 0; i < tablesTurnoverRateByWeek.size(); i++) {
+                        JSONObject tableObj = tablesTurnoverRateByWeek.getJSONObject(i);
+                        JSONObject table = tableObj.getJSONObject("table");
+                        BigDecimal turnoverRateByWeek = table.getJSONArray("ths_turnover_ratio_w_stock").getBigDecimal(0);
+                        if (turnoverRateByWeek == null) {
+                            turnoverRateByWeekRates.add(0.0000);
+                        } else {
+                            turnoverRateByWeekRates.add(turnoverRateByWeek.doubleValue());
+                        }
+                    }
+                    //周换手率
+                    for (int i = 0; i < turnoverRateByWeekRates.size(); i++) {
+                        Double turnoverRateByWeekResultRateResult = turnoverRateByWeekRates.getDouble(i);
+                        // 创建 DecimalFormat 对象，指定保留小数点后 4 位
+                        DecimalFormat df = new DecimalFormat("0.0000");
+                        String formattedTurnoverRateByWeekResult = df.format(turnoverRateByWeekResultRateResult);
+                        log.info("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | 周换手率 = {}", formattedTurnoverRateByWeekResult);
+                        thsScoreMapper.updateThsScoreTurnoverRateByWeek(stockCodes[i], formattedTurnoverRateByWeekResult);
+                        if (thsScoreMapper.updateThsScoreTurnoverRateByWeek(stockCodes[i], formattedTurnoverRateByWeekResult) == 0) {
+                            return RespRes.success("更新失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl updateThsScoreTurnoverRateByWeekData THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl updateThsScoreTurnoverRateByWeekData Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("更新成功");
+    }
+
+    /**
+     * 更新自由流通市值，总市值
+     *
+     * @return
+     */
+    @Override
+    public RespRes updateThsScoreMarketValueData() {
+        log.info("ThsScoreServiceImpl | updateThsScoreMarketValueData | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | updateThsScoreMarketValueData | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    //获取所有股票代码
+                    List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
+                    String[] stockCodes = thsScoreResList.stream()
+                            .map(ThsScoreRes::getStockCode)
+                            .toArray(String[]::new);
+                    String stockCodesStr = String.join(",", stockCodes);
+                    //自由流通市值
+                    String freeFlowMarketValueResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_free_float_mv_stock", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    JSONObject jsonObjectFreeFlowMarketValue = JSON.parseObject(freeFlowMarketValueResult);
+                    JSONArray tablesFreeFlowMarketValue = jsonObjectFreeFlowMarketValue.getJSONArray("tables");
+                    JSONArray freeFlowMarketValueRates = new JSONArray();
+                    if (tablesFreeFlowMarketValue.size() == 0) {
+                        return RespRes.error("更新失败");
+                    }
+                    for (int i = 0; i < tablesFreeFlowMarketValue.size(); i++) {
+                        JSONObject tableObj = tablesFreeFlowMarketValue.getJSONObject(i);
+                        JSONObject table = tableObj.getJSONObject("table");
+                        BigDecimal freeFlowMarketValue = table.getJSONArray("ths_free_float_mv_stock").getBigDecimal(0);
+                        if (freeFlowMarketValue == null) {
+                            freeFlowMarketValueRates.add(0.0000);
+                        } else {
+                            freeFlowMarketValueRates.add(freeFlowMarketValue.doubleValue());
+                        }
+                    }
+                    //总市值
+                    String allMarketValueResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_market_value_stock", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    JSONObject jsonObjectAllMarketValue = JSON.parseObject(allMarketValueResult);
+                    JSONArray tablesAllMarketValue = jsonObjectAllMarketValue.getJSONArray("tables");
+                    JSONArray allMarketValueRates = new JSONArray();
+                    for (int i = 0; i < tablesAllMarketValue.size(); i++) {
+                        JSONObject tableObj = tablesAllMarketValue.getJSONObject(i);
+                        JSONObject table = tableObj.getJSONObject("table");
+                        BigDecimal allMarketValue = table.getJSONArray("ths_market_value_stock").getBigDecimal(0);
+                        if (allMarketValue == null) {
+                            allMarketValueRates.add(0.0000);
+                        } else {
+                            allMarketValueRates.add(allMarketValue.doubleValue());
+                        }
+                    }
+                    //自由流通市值,总市值
+                    for (int i = 0; i < freeFlowMarketValueRates.size(); i++) {
+                        Double freeFlowMarketValueRateResult = freeFlowMarketValueRates.getDouble(i);
+                        Double allMarketValueRateResult = allMarketValueRates.getDouble(i);
+                        // 创建 DecimalFormat 对象，指定保留小数点后 4 位
+                        DecimalFormat df = new DecimalFormat("0.0000");
+                        String formattedFreeFlowMarketValueRateResult = df.format(freeFlowMarketValueRateResult);
+                        String formattedAllMarketValueRateResult = df.format(allMarketValueRateResult);
+                        log.info("ThsScoreServiceImpl | updateThsScoreMarketValueData | 自由流通市值 = {} | 总市值 = {}", formattedFreeFlowMarketValueRateResult, formattedAllMarketValueRateResult);
+                        thsScoreMapper.updateThsScoreMarketValue(stockCodes[i], formattedFreeFlowMarketValueRateResult, formattedAllMarketValueRateResult);
+                        if (thsScoreMapper.updateThsScoreMarketValue(stockCodes[i], formattedFreeFlowMarketValueRateResult, formattedAllMarketValueRateResult) == 0) {
+                            return RespRes.success("更新失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | updateThsScoreMarketValueData | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl updateThsScoreMarketValueData THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | updateThsScoreMarketValueData | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl updateThsScoreMarketValueData Failed to login after 3 tries.");
         }
 
         return RespRes.success("更新成功");
@@ -226,8 +457,18 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             ret = JDIBridge.THS_iFinDLogin("xlkjyy001", "666888");
             System.out.println(ret);
             if (ret == 0) {
+                //股息率近12个月
 //                String result = JDIBridge.THS_BasicData("000008.SZ","ths_dividend_rate_12m_stock","2023-05-20");
-                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_dividend_rate_stock_stock","2021-12-31,2021");
+                //股息率2021
+//                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_dividend_rate_stock_stock","2021-12-31,2021");
+                //PB最新
+//                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_pb_latest_stock","2023-05-21,100");
+                //周换手率
+//                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_turnover_ratio_w_stock","2023-05-21");
+                //自由流通市值
+//                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_free_float_mv_stock","2023-05-21");
+                //总市值
+                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_market_value_stock","2023-05-21");
                 System.out.println("result == " + result );
                 JSONObject jsonObject = JSON.parseObject(result);
                 System.out.println(jsonObject);

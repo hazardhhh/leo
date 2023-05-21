@@ -35,4 +35,22 @@ public class ThsScoreController {
         return thsScoreService.updateThsScoreDividendData();
     }
 
+    @PostMapping("updateThsScorePBData")
+    @ApiOperation(value = "更新PB最新")
+    public RespRes updateThsScorePBData() {
+        return thsScoreService.updateThsScorePBData();
+    }
+
+    @PostMapping("updateThsScoreTurnoverRateByWeekData")
+    @ApiOperation(value = "更新周换手率")
+    public RespRes updateThsScoreTurnoverRateByWeekData() {
+        return thsScoreService.updateThsScoreTurnoverRateByWeekData();
+    }
+
+    @PostMapping("updateThsScoreMarketValueData")
+    @ApiOperation(value = "更新自由流通市值,总市值")
+    public RespRes updateThsScoreMarketValueData() {
+        return thsScoreService.updateThsScoreMarketValueData();
+    }
+
 }

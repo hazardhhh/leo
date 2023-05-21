@@ -37,4 +37,32 @@ public interface ThsScoreMapper {
      * @return
      */
     public int updateThsScoreDividend(String stockCode, String dividend2021, String dividend2020, String dividendAverage3);
+
+    /**
+     * 更新PB最新
+     *
+     * @param stockCode
+     * @param PB
+     * @return
+     */
+    public int updateThsScorePB(String stockCode, String PB);
+
+    /**
+     * 更新周换手率
+     *
+     * @param stockCode
+     * @param turnoverRateByWeek
+     * @return
+     */
+    public int updateThsScoreTurnoverRateByWeek(String stockCode, String turnoverRateByWeek);
+
+    /**
+     * 更新自由流通市值,总市值
+     *
+     * @param stockCode
+     * @param freeFlowMarketValue
+     * @param allMarketValue
+     * @return
+     */
+    public int updateThsScoreMarketValue(String stockCode, String freeFlowMarketValue, String allMarketValue);
 }

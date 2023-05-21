@@ -44,4 +44,15 @@ public class ThsScoreRes {
     @ApiModelProperty(value = "股息率过去3年平均值")
     private String dividendAverage3;
 
+    @ApiModelProperty(value = "PB最新")
+    private String PB;
+
+    @ApiModelProperty(value = "周换手率")
+    private String turnoverRateByWeek;
+
+    @ApiModelProperty(value = "自由流通市值")
+    private String freeFlowMarketValue;
+
+    @ApiModelProperty(value = "总市值")
+    private String allMarketValue;
 }

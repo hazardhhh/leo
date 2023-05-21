@@ -32,4 +32,26 @@ public interface ThsScoreService {
      * @return
      */
     public RespRes updateThsScoreDividendData();
+
+    /**
+     * 更新PB最新
+     *
+     * @return
+     */
+    public RespRes updateThsScorePBData();
+
+    /**
+     * 更新周换手率
+     *
+     * @return
+     */
+    public RespRes updateThsScoreTurnoverRateByWeekData();
+
+    /**
+     * 更新自由流通市值,总市值
+     *
+     * @return
+     */
+    public RespRes updateThsScoreMarketValueData();
+
 }
