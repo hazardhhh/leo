@@ -16,6 +16,7 @@ import java.util.Properties;
  */
 @Configuration
 public class CaptchaConfig {
+
     @Bean
     public DefaultKaptcha getDefaultKaptcha() {
         //验证码生成器

@@ -17,6 +17,13 @@
         <result column="turnover_rate_by_Week" property="turnoverRateByWeek"/>
         <result column="free_flow_market_value" property="freeFlowMarketValue"/>
         <result column="all_market_value" property="allMarketValue"/>
+        <result column="ROE_by_quarter" property="ROEByQuarter"/>
+        <result column="ROE_2022" property="ROE2022"/>
+        <result column="ROE_2021" property="ROE2021"/>
+        <result column="ROE_2020" property="ROE2020"/>
+        <result column="ROE_average_3" property="ROEAverage3"/>
+        <result column="revenue" property="revenue"/>
+        <result column="net_profit" property="netProfit"/>
     </resultMap>
 
     <select id="getThsScoreResult" resultMap="ThsScoreResultMap">
@@ -41,6 +48,18 @@
 
     <update id="updateThsScoreMarketValue">
         update ths_score set free_flow_market_value = #{freeFlowMarketValue}, all_market_value = #{allMarketValue} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreROEByQuarter">
+        update ths_score set ROE_by_quarter = #{ROEByQuarter} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreROE">
+        update ths_score set ROE_2022 = #{ROE2022}, ROE_2021 = #{ROE2021}, ROE_2020 = #{ROE2020}, ROE_average_3 = #{ROEAverage3} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreRevenueAndNetProfit">
+        update ths_score set revenue = #{revenue}, net_profit = #{netProfit} where stock_code = #{stockCode}
     </update>
 
 </mapper>

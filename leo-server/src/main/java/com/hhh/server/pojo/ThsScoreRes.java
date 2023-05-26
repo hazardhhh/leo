@@ -55,4 +55,26 @@ public class ThsScoreRes {
 
     @ApiModelProperty(value = "总市值")
     private String allMarketValue;
+
+    @ApiModelProperty(value = "ROE最新季度")
+    private String ROEByQuarter;
+
+    @ApiModelProperty(value = "ROE2022")
+    private String ROE2022;
+
+    @ApiModelProperty(value = "ROE2021")
+    private String ROE2021;
+
+    @ApiModelProperty(value = "ROE2020")
+    private String ROE2020;
+
+    @ApiModelProperty(value = "ROE过去3年平均值")
+    private String ROEAverage3;
+
+    @ApiModelProperty(value = "营收增速最新季度")
+    private String revenue;
+
+    @ApiModelProperty(value = "净利增速最新季度")
+    private String netProfit;
+
 }

@@ -65,4 +65,36 @@ public interface ThsScoreMapper {
      * @return
      */
     public int updateThsScoreMarketValue(String stockCode, String freeFlowMarketValue, String allMarketValue);
+
+    /**
+     * 更新ROE最新季度
+     *
+     * @param stockCode
+     * @param turnoverRateByWeek
+     * @return
+     */
+    public int updateThsScoreROEByQuarter(String stockCode, String ROEByQuarter);
+
+    /**
+     * 更新ROE2022,2021，2020，过去3年平均值
+     *
+     * @param stockCode
+     * @param ROE2022
+     * @param ROE2021
+     * @param ROE2020
+     * @param ROEAverage3
+     * @return
+     */
+    public int updateThsScoreROE(String stockCode, String ROE2022, String ROE2021, String ROE2020, String ROEAverage3);
+
+    /**
+     * 更新营收增速,净利增速最新季度
+     *
+     * @param stockCode
+     * @param revenue
+     * @param netProfit
+     * @return
+     */
+    public int updateThsScoreRevenueAndNetProfit(String stockCode, String revenue, String netProfit);
+
 }

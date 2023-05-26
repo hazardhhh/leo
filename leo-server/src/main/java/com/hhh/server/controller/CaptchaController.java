@@ -1,8 +1,8 @@
 package com.hhh.server.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.hhh.server.logger.LeoLog;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +22,9 @@ import java.io.IOException;
  * @date 2022/1/23 2:25
  */
 @RestController
-@Log4j2
 public class CaptchaController {
+
+    private static final LeoLog log = LeoLog.getInstance();
 
     @Autowired
     private DefaultKaptcha defaultKaptcha;

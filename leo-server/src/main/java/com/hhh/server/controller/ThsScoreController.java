@@ -53,4 +53,22 @@ public class ThsScoreController {
         return thsScoreService.updateThsScoreMarketValueData();
     }
 
+    @PostMapping("updateThsScoreROEByQuarterData")
+    @ApiOperation(value = "更新ROE最新季度")
+    public RespRes updateThsScoreROEByQuarterData() {
+        return thsScoreService.updateThsScoreROEByQuarterData();
+    }
+
+    @PostMapping("updateThsScoreROEData")
+    @ApiOperation(value = "更新ROE2022,2021,2020,过去3年平均值")
+    public RespRes updateThsScoreROEData() {
+        return thsScoreService.updateThsScoreROEData();
+    }
+
+    @PostMapping("updateThsScoreRevenueAndNetProfitData")
+    @ApiOperation(value = "更新营收增速,净利增速最新季度")
+    public RespRes updateThsScoreRevenueAndNetProfitData() {
+        return thsScoreService.updateThsScoreRevenueAndNetProfitData();
+    }
+
 }

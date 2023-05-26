@@ -54,4 +54,25 @@ public interface ThsScoreService {
      */
     public RespRes updateThsScoreMarketValueData();
 
+    /**
+     * 更新ROE最新季度
+     *
+     * @return
+     */
+    public RespRes updateThsScoreROEByQuarterData();
+
+    /**
+     * 更新ROE2022,2021,2020,过去3年平均值
+     *
+     * @return
+     */
+    public RespRes updateThsScoreROEData();
+
+    /**
+     * 更新营收增速,净利增速最新季度
+     *
+     * @return
+     */
+    public RespRes updateThsScoreRevenueAndNetProfitData();
+
 }
