@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class RespRes {
     private long code;
     private String message;
-    private Object obj;
+    private Object var;
 
     /**
      * 成功返回结果

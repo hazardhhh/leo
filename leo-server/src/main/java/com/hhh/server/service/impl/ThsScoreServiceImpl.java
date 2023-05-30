@@ -3,8 +3,7 @@ package com.hhh.server.service.impl;
 import Ths.JDIBridge;
 import com.hhh.server.logger.LeoLog;
 import com.hhh.server.mapper.ThsScoreMapper;
-import com.hhh.server.pojo.RespRes;
-import com.hhh.server.pojo.ThsScoreRes;
+import com.hhh.server.pojo.*;
 import com.hhh.server.service.ThsScoreService;
 import com.hhh.server.utils.ThsScoreFunc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,14 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description ThsScoreServiceImpl实现类
@@ -718,6 +719,283 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         return RespRes.success("更新成功");
     }
 
+    /**
+     * 计算排名百分比和打分
+     *
+     * @return
+     */
+    @Override
+    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq) {
+        List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
+        //使用Collectors.groupingBy()方法将thsScoreResList按照swFirst字段进行分组
+        Map<?, List<ThsScoreRes>> groupMap = null;
+        if (rankPCTScoreReq.getGroupByType() == 1) {
+            groupMap = thsScoreResList.stream().collect(Collectors.groupingBy(ThsScoreRes::getSwFirst));
+        } else if (rankPCTScoreReq.getGroupByType() == 2) {
+            groupMap = thsScoreResList.stream().collect(Collectors.groupingBy(res -> Tuple.of(res.getSwFirst(), res.getCorpAttr())));
+        } else if (rankPCTScoreReq.getGroupByType() == 3) {
+            groupMap = thsScoreResList.stream().collect(Collectors.groupingBy(ThsScoreRes::getSwSecond));
+        } else if (rankPCTScoreReq.getGroupByType() == 4) {
+            groupMap = thsScoreResList.stream().collect(Collectors.groupingBy(res -> Tuple.of(res.getSwSecond(), res.getCorpAttr())));
+        } else {
+            log.info("ThsScoreServiceImpl | rankPctAndScore | groupByType = {}", rankPCTScoreReq.getGroupByType());
+            return null;
+        }
+        List<ThsScoreRes> thsScoreRes = new ArrayList<>();
+        for (Map.Entry<?, List<ThsScoreRes>> entry : groupMap.entrySet()) {
+            List<ThsScoreRes> groupList = null;
+            if (rankPCTScoreReq.getGroupByType() == 1) {
+                String swFirst = (String) entry.getKey();
+                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swFirst);
+                groupList = entry.getValue();
+            } else if (rankPCTScoreReq.getGroupByType() == 2) {
+                Tuple2<String, String> compKey = (Tuple2<String, String>) entry.getKey();
+                String swFirst = compKey._1;
+                String corpAttr = compKey._2;
+                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swFirst, corpAttr);
+                groupList = entry.getValue();
+            } else if (rankPCTScoreReq.getGroupByType() == 3) {
+                String swSecond = (String) entry.getKey();
+                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swSecond);
+                groupList = entry.getValue();
+            } else if (rankPCTScoreReq.getGroupByType() == 4) {
+                Tuple2<String, String> compKey = (Tuple2<String, String>) entry.getKey();
+                String swSecond = compKey._1;
+                String corpAttr = compKey._2;
+                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swSecond, corpAttr);
+                groupList = entry.getValue();
+            } else {
+                return null;
+            }
+            // 将每个元素的分数保存到一个列表中,并对列表进行排序
+            // 股息率近12个月
+            List<Double> dividend12List = groupList.stream()
+                    .map(ThsScoreRes::getDividend12)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 股息率2022
+            List<Double> dividend2022List = groupList.stream()
+                    .map(ThsScoreRes::getDividend2022)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 股息率2021
+            List<Double> dividend2021List = groupList.stream()
+                    .map(ThsScoreRes::getDividend2021)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 股息率2020
+            List<Double> dividend2020List = groupList.stream()
+                    .map(ThsScoreRes::getDividend2020)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 股息率过去3年平均值
+            List<Double> dividendAverage3List = groupList.stream()
+                    .map(ThsScoreRes::getDividendAverage3)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // PB最新
+            List<Double> PBList = groupList.stream()
+                    .map(ThsScoreRes::getPB)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 周换手率
+            List<Double> turnoverRateByWeekList = groupList.stream()
+                    .map(ThsScoreRes::getTurnoverRateByWeek)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 自由流通市值
+            List<Double> freeFlowMarketValueList = groupList.stream()
+                    .map(ThsScoreRes::getFreeFlowMarketValue)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 总市值
+            List<Double> allMarketValueList = groupList.stream()
+                    .map(ThsScoreRes::getAllMarketValue)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // ROE最新季度
+            List<Double> ROEByQuarterList = groupList.stream()
+                    .map(ThsScoreRes::getROEByQuarter)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // ROE2022
+            List<Double> ROE2022List = groupList.stream()
+                    .map(ThsScoreRes::getROE2022)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // ROE2021
+            List<Double> ROE2021List = groupList.stream()
+                    .map(ThsScoreRes::getROE2021)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // ROE2020
+            List<Double> ROE2020List = groupList.stream()
+                    .map(ThsScoreRes::getROE2020)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // ROE过去3年平均值
+            List<Double> ROEAverage3List = groupList.stream()
+                    .map(ThsScoreRes::getROEAverage3)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 营收增速最新季度
+            List<Double> revenueList = groupList.stream()
+                    .map(ThsScoreRes::getRevenue)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 净利增速最新季度
+            List<Double> netProfitList = groupList.stream()
+                    .map(ThsScoreRes::getNetProfit)
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+            // 计算排名
+//            int size = revenueList.size();
+//            int[] ranks = new int[size];
+//            for (int i = 0; i < size; i++) {
+//                double value = revenueList.get(i);
+//                int rank = 1;
+//                for (int j = 0; j < size; j++) {
+//                    if (i != j && revenueList.get(j) <= value) {
+//                        rank++;
+//                    }
+//                }
+//                ranks[i] = rank;
+//            }
+//            for (int i = 0; i < groupList.size(); i++) {
+//                ThsScoreRes res = groupList.get(i);
+//                double revenue = Double.parseDouble(res.getRevenue());
+//                int revenueRank = ranks[revenueList.indexOf(revenue)];
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | stockCode = {} | revenueRank = {}", res.getStockCode(), revenueRank);
+//            }
+            // 计算排名百分比及得分
+            for (ThsScoreRes res : groupList) {
+                ThsScoreRes thsScore = new ThsScoreRes();
+                String dividend12RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getDividend12()), dividend12List);
+                String dividend12RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(dividend12RankPct)));
+                String dividend2022RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getDividend2022()), dividend2022List);
+                String dividend2022RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(dividend2022RankPct)));
+                String dividend2021RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getDividend2021()), dividend2021List);
+                String dividend2021RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(dividend2021RankPct)));
+                String dividend2020RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getDividend2020()), dividend2020List);
+                String dividend2020RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(dividend2020RankPct)));
+                String dividendAverage3RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getDividendAverage3()), dividendAverage3List);
+                String dividendAverage3RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(dividendAverage3RankPct)));
+                // PB 越低越好 取反
+                String PBRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getPB()), PBList);
+                String PBRankScore = String.valueOf(ThsScoreFunc.reIndustryRankPct10(Double.valueOf(PBRankPct)));
+                // turnoverRateByWeek 周换手率 越低越好 取反
+                String turnoverRateByWeekRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getTurnoverRateByWeek()), turnoverRateByWeekList);
+                String turnoverRateByWeekRankScore = String.valueOf(ThsScoreFunc.reIndustryRankPct10(Double.valueOf(turnoverRateByWeekRankPct)));
+                // freeFlowMarketValue 自由流通市值 越低越好 取反
+                String freeFlowMarketValueRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getFreeFlowMarketValue()), freeFlowMarketValueList);
+                String freeFlowMarketValueRankScore = String.valueOf(ThsScoreFunc.reIndustryRankPct10(Double.valueOf(freeFlowMarketValueRankPct)));
+                // allMarketValue 总市值 越低越好 取反
+                String allMarketValueRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getAllMarketValue()), allMarketValueList);
+                String allMarketValueRankScore = String.valueOf(ThsScoreFunc.reIndustryRankPct10(Double.valueOf(allMarketValueRankPct)));
+                String ROEByQuarterRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getROEByQuarter()), ROEByQuarterList);
+                String ROEByQuarterRankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(ROEByQuarterRankPct)));
+                String ROE2022RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getROE2022()), ROE2022List);
+                String ROE2022RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(ROE2022RankPct)));
+                String ROE2021RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getROE2021()), ROE2021List);
+                String ROE2021RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(ROE2021RankPct)));
+                String ROE2020RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getROE2020()), ROE2020List);
+                String ROE2020RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(ROE2020RankPct)));
+                String ROEAverage3RankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getROEAverage3()), ROEAverage3List);
+                String ROEAverage3RankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(ROEAverage3RankPct)));
+                String revenueRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getRevenue()), revenueList);
+                String revenueRankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(revenueRankPct)));
+                String netProfitRankPct = ThsScoreFunc.rankPct(Double.parseDouble(res.getNetProfit()), netProfitList);
+                String netProfitRankScore = String.valueOf(ThsScoreFunc.industryRankPct10(Double.valueOf(netProfitRankPct)));
+                thsScore.setStockCode(res.getStockCode());
+                thsScore.setStockName(res.getStockName());
+                thsScore.setSwFirst(res.getSwFirst());
+                thsScore.setSwSecond(res.getSwSecond());
+                thsScore.setCorpAttr(res.getCorpAttr());
+                thsScore.setDividend12(res.getDividend12());
+                thsScore.setDividend2022(res.getDividend2022());
+                thsScore.setDividend2021(res.getDividend2021());
+                thsScore.setDividend2020(res.getDividend2020());
+                thsScore.setDividendAverage3(res.getDividendAverage3());
+                thsScore.setPB(res.getPB());
+                thsScore.setTurnoverRateByWeek(res.getTurnoverRateByWeek());
+                thsScore.setFreeFlowMarketValue(res.getFreeFlowMarketValue());
+                thsScore.setAllMarketValue(res.getAllMarketValue());
+                thsScore.setROEByQuarter(res.getROEByQuarter());
+                thsScore.setROE2022(res.getROE2022());
+                thsScore.setROE2021(res.getROE2021());
+                thsScore.setROE2020(res.getROE2020());
+                thsScore.setROEAverage3(res.getROEAverage3());
+                thsScore.setRevenue(res.getRevenue());
+                thsScore.setNetProfit(res.getNetProfit());
+                // 排名与得分
+                thsScore.setDividend12PCT(dividend12RankPct);
+                thsScore.setDividend12Score(dividend12RankScore);
+                thsScore.setDividend2022PCT(dividend2022RankPct);
+                thsScore.setDividend2022Score(dividend2022RankScore);
+                thsScore.setDividend2021PCT(dividend2021RankPct);
+                thsScore.setDividend2021Score(dividend2021RankScore);
+                thsScore.setDividend2020PCT(dividend2020RankPct);
+                thsScore.setDividend2022Score(dividend2020RankScore);
+                thsScore.setDividendAverage3PCT(dividendAverage3RankPct);
+                thsScore.setDividendAverage3Score(dividendAverage3RankScore);
+                thsScore.setPBPCT(PBRankPct);
+                thsScore.setPBScore(PBRankScore);
+                thsScore.setTurnoverRateByWeekPCT(turnoverRateByWeekRankPct);
+                thsScore.setTurnoverRateByWeekScore(turnoverRateByWeekRankScore);
+                thsScore.setFreeFlowMarketValuePCT(freeFlowMarketValueRankPct);
+                thsScore.setFreeFlowMarketValueScore(freeFlowMarketValueRankScore);
+                thsScore.setAllMarketValuePCT(allMarketValueRankPct);
+                thsScore.setAllMarketValueScore(allMarketValueRankScore);
+                thsScore.setROEByQuarterPCT(ROEByQuarterRankPct);
+                thsScore.setROEByQuarterScore(ROEByQuarterRankScore);
+                thsScore.setROE2022PCT(ROE2022RankPct);
+                thsScore.setROE2022Score(ROE2022RankScore);
+                thsScore.setROE2021PCT(ROE2021RankPct);
+                thsScore.setROE2021Score(ROE2021RankScore);
+                thsScore.setROE2020PCT(ROE2020RankPct);
+                thsScore.setROE2020Score(ROE2020RankScore);
+                thsScore.setROEAverage3PCT(ROEAverage3RankPct);
+                thsScore.setROEAverage3Score(ROEAverage3RankScore);
+                thsScore.setRevenuePCT(revenueRankPct);
+                thsScore.setRevenueScore(revenueRankScore);
+                thsScore.setNetProfitPCT(netProfitRankPct);
+                thsScore.setNetProfitScore(netProfitRankScore);
+                thsScoreRes.add(thsScore);
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | stockCode = {} | revenueRankPct = {} | revenueRankScore = {}", res.getStockCode(), revenueRankPct, revenueRankScore);
+            }
+        }
+        log.info("ThsScoreServiceImpl | rankPctAndScore | rankPCTScoreRes = {}", thsScoreRes);
+        BasicPageRes<RespRes> res = new BasicPageRes<>();
+        if (thsScoreRes.size() == 0) {
+            res.setPage(null);
+            res.setCode(500);
+            res.setMessage("获取失败");
+            res.setVar(new ArrayList<>());
+            return res;
+        }
+        LeoPage leoPage = new LeoPage(rankPCTScoreReq.getPageNo(), rankPCTScoreReq.getPageSize());
+        List<ThsScoreRes> thsScoreResult = thsScoreRes.stream()
+                .filter(result -> result.getStockCode().contains(rankPCTScoreReq.getKeyWord()) || result.getStockName().contains(rankPCTScoreReq.getKeyWord()))
+                .filter(result -> result.getSwFirst().contains(rankPCTScoreReq.getSwAttr()) || result.getSwSecond().contains(rankPCTScoreReq.getSwAttr()))
+                .filter(result -> result.getCorpAttr().contains(rankPCTScoreReq.getCorpAttr()))
+                .skip((long) (rankPCTScoreReq.getPageNo() - 1) * rankPCTScoreReq.getPageSize())
+                .limit(rankPCTScoreReq.getPageSize())
+                .collect(Collectors.toList());res.setCode(200);
+        int totalCount = (int) thsScoreRes.stream()
+                .filter(result -> result.getStockCode().contains(rankPCTScoreReq.getKeyWord()) || result.getStockName().contains(rankPCTScoreReq.getKeyWord()))
+                .filter(result -> result.getSwFirst().contains(rankPCTScoreReq.getSwAttr()) || result.getSwSecond().contains(rankPCTScoreReq.getSwAttr()))
+                .filter(result -> result.getCorpAttr().contains(rankPCTScoreReq.getCorpAttr()))
+                .count();
+        int totalPageSum = (int) Math.ceil((double) totalCount / rankPCTScoreReq.getPageSize());
+        leoPage.setTotalCount((long) totalCount);
+        leoPage.setTotalPageNum(totalPageSum);
+        res.setPage(leoPage);
+        res.setCode(200);
+        res.setMessage("获取成功");
+        res.setVar(thsScoreResult);
+        return res;
+    }
+
     public static void main(String[] args) {
         System.out.println(System.getProperty("java.library.path"));
         System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
@@ -771,6 +1049,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         if (tryCount == 0) {
             System.out.println("Failed to login after 3 tries.");
         }
+
+
 
     }
 

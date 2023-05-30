@@ -19,6 +19,14 @@ public interface ThsScoreMapper {
     public List<ThsScoreRes> getThsScoreResult();
 
     /**
+     * 获取所有结果
+     *
+     * @param stockCode
+     * @return
+     */
+    public List<ThsScoreRes> getThsScoreResultByStockCode(String stockCode);
+
+    /**
      * 更新股息率近12个月
      *
      * @param stockCode

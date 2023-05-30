@@ -1,5 +1,7 @@
 package com.hhh.server.service;
 
+import com.hhh.server.pojo.BasicPageRes;
+import com.hhh.server.pojo.RankPCTScoreReq;
 import com.hhh.server.pojo.RespRes;
 import com.hhh.server.pojo.ThsScoreRes;
 
@@ -74,5 +76,12 @@ public interface ThsScoreService {
      * @return
      */
     public RespRes updateThsScoreRevenueAndNetProfitData();
+
+    /**
+     * 计算排名百分比和打分
+     *
+     * @return
+     */
+    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq);
 
 }

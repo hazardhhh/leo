@@ -24,4 +24,5 @@ public class UpdatePwdReq {
 
     @ApiModelProperty(value = "新密码")
     private String pass;
+
 }
