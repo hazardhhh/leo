@@ -1,5 +1,6 @@
 package com.hhh.server.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -23,6 +24,10 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 public class Swagger2Config {
+
+    @Value("${ths.swaggerUrl}")
+    private String swaggerUrl;
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -64,7 +69,8 @@ public class Swagger2Config {
         return new ApiInfoBuilder()
                 .title("接口文档")
                 .description("接口文档")
-                .contact(new Contact("hhh", "http:localhost:7896/doc.html", "hhh@hhh.com"))
+//                .contact(new Contact("hhh", "http:localhost:7896/doc.html", "hhh@hhh.com"))
+                .contact(new Contact("hhh", swaggerUrl, "hhh@hhh.com"))
                 .version("1.0.0")
                 .build();
     }

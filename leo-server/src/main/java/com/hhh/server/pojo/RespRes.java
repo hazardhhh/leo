@@ -15,8 +15,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespRes {
+
     private long code;
+
     private String message;
+
     private Object var;
 
     /**
@@ -60,4 +63,5 @@ public class RespRes {
     public static RespRes error(String message, Object obj) {
         return new RespRes(500, message, obj);
     }
+
 }

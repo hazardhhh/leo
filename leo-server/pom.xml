@@ -153,6 +153,13 @@
             <version>0.10.2</version>
         </dependency>
 
+        <!-- ths sdk -->
+        <dependency>
+            <groupId>com.hhh</groupId>
+            <artifactId>ths-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

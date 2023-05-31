@@ -7,6 +7,7 @@ import com.hhh.server.pojo.*;
 import com.hhh.server.service.ThsScoreService;
 import com.hhh.server.utils.ThsScoreFunc;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -36,12 +37,21 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     /**
      * 同花顺用户名
      */
-    private final String thsUserName = "xlkjyy001";
+    @Value("${ths.username}")
+    private String thsUserName;
 
     /**
      * 同花顺密码
      */
-    private final String thsPassWord = "666888";
+    @Value("${ths.thsPassWord}")
+    private String thsPassWord;
+
+    /**
+     * 同花顺加载配置
+     */
+//    private final String thsLoadConf = "F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll";
+    @Value("${ths.loadConf}")
+    private String thsLoadConf;
 
     /**
      * 获取所有结果
@@ -61,7 +71,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreDividend12Data() {
         log.info("ThsScoreServiceImpl | updateThsScoreDividend12Data | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -132,7 +142,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreDividendData() {
         log.info("ThsScoreServiceImpl | updateThsScoreDividendData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -225,7 +235,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScorePBData() {
         log.info("ThsScoreServiceImpl | updateThsScorePBData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -296,7 +306,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreTurnoverRateByWeekData() {
         log.info("ThsScoreServiceImpl | updateThsScoreTurnoverRateByWeekData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -367,7 +377,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreMarketValueData() {
         log.info("ThsScoreServiceImpl | updateThsScoreMarketValueData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -455,7 +465,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreROEByQuarterData() {
         log.info("ThsScoreServiceImpl | updateThsScoreROEByQuarterData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -526,7 +536,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreROEData() {
         log.info("ThsScoreServiceImpl | updateThsScoreROEData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -639,7 +649,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Override
     public RespRes updateThsScoreRevenueAndNetProfitData() {
         log.info("ThsScoreServiceImpl | updateThsScoreRevenueAndNetProfitData | SystemProperty = {}", System.getProperty("java.library.path"));
-        System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
+        System.load(thsLoadConf);
         int loginResultRet = -1;
         int tryCount = 3;
         while (tryCount > 0) {
@@ -996,6 +1006,42 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         return res;
     }
 
+    /**
+     * 测试接口
+     *
+     * @return
+     */
+    @Override
+    public RespRes thsTest() {
+        log.info("ThsScoreServiceImpl | thsTest | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load(thsLoadConf);
+        int loginResultRet = -1;
+        int tryCount = 3;
+        String result = null;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | thsTest | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ", "ths_np_yoy_stock", "2023-03-31");
+                log.info("ThsScoreServiceImpl | thsTest | result = {}", result);
+                JSONObject jsonObjectResult = JSON.parseObject(result);
+                log.info("ThsScoreServiceImpl | thsTest | jsonObjectResult = {}", jsonObjectResult);
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl thsTest THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | thsTest | LoginFail | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl thsTest Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("获取成功", result);
+    }
+
     public static void main(String[] args) {
         System.out.println(System.getProperty("java.library.path"));
         System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
@@ -1039,8 +1085,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 JDIBridge.THS_iFinDLogout();
                 System.out.println("THS_iFinDLogout");
                 break;
-            }
-            else {
+            } else {
                 System.out.println("Login failed ret == " + ret);
                 tryCount--;
             }
@@ -1049,8 +1094,6 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         if (tryCount == 0) {
             System.out.println("Failed to login after 3 tries.");
         }
-
-
 
     }
 

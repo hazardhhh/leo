@@ -7,8 +7,10 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
+#    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
     username: root
     password: 111111
+#    password: 51985993+H
     hikari:
       # 连接池名
       pool-name: DateHikariCP
@@ -50,3 +52,8 @@ jwt:
   # JWT 负载中拿到开头
   tokenHead: Bearer
 
+ths:
+  swaggerUrl: http:localhost:7896/doc.html
+  username: xlkjyy001
+  thsPassWord: 666888
+  loadConf: F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll

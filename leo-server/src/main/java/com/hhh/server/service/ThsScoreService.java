@@ -84,4 +84,11 @@ public interface ThsScoreService {
      */
     public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq);
 
+    /**
+     * 测试接口
+     *
+     * @return
+     */
+    public RespRes thsTest();
+
 }
