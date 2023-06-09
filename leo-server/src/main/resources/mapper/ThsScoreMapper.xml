@@ -15,7 +15,7 @@
         <result column="dividend_2020" property="dividend2020"/>
         <result column="dividend_average_3" property="dividendAverage3"/>
         <result column="PB" property="PB"/>
-        <result column="turnover_rate_by_Week" property="turnoverRateByWeek"/>
+        <result column="turnover_rate_by_week" property="turnoverRateByWeek"/>
         <result column="free_flow_market_value" property="freeFlowMarketValue"/>
         <result column="all_market_value" property="allMarketValue"/>
         <result column="ROE_by_quarter" property="ROEByQuarter"/>

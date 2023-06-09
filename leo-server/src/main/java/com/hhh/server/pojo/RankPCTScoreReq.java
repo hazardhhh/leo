@@ -34,4 +34,7 @@ public class RankPCTScoreReq {
     @ApiModelProperty(value = "每页大小")
     private Integer pageSize;
 
+    @ApiModelProperty(value = "0 查询 1 导出")
+    private Integer type;
+
 }

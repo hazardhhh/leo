@@ -17,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class XlsxReader {
 
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
         String fileName = "F:\\打分\\04.打分算法\\申万二级企业属性.xlsx";
         String url = "jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT";
         String user = "root";
@@ -114,7 +114,7 @@ public class XlsxReader {
         }
     }
 
-    public static void main1(String[] args) {
+    public static void main(String[] args) {
         String fileName = "F:\\打分\\04.打分算法\\申万一级企业属性.xlsx";
         String url = "jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT";
         String user = "root";
@@ -125,7 +125,7 @@ public class XlsxReader {
             // 1. 获取数据库连接
             conn = DriverManager.getConnection(url, user, password);
             // 2. 准备 SQL 语句
-            String sql = "INSERT INTO ths_score (stock_code, stock_name, sw_first, corp_attr) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO ths_memoir (stock_code, stock_name) VALUES (?, ?)";
             stmt = conn.prepareStatement(sql);
             // 3. 读取 xlsx 文件
             System.out.println("start");
@@ -141,7 +141,7 @@ public class XlsxReader {
                     while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
                         String header = cell.getStringCellValue().trim();
-                        if (header.equals("证券代码") || header.equals("证券名称") || header.equals("申万一级") || header.equals("企业属性")) {
+                        if (header.equals("证券代码") || header.equals("证券名称")) {
                             colIndexList.add(cell.getColumnIndex());
                         }
                     }

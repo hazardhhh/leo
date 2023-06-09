@@ -1,6 +1,7 @@
 package com.hhh.server.controller;
 
 import com.hhh.server.logger.LeoLog;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2022/1/21 @Version 1.0.0
  */
 @RestController
+@CrossOrigin
 public class TestController {
 
     private static final LeoLog log = LeoLog.getInstance();

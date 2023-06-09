@@ -20,7 +20,7 @@ public class RespRes {
 
     private String message;
 
-    private Object var;
+    private Object result;
 
     /**
      * 成功返回结果

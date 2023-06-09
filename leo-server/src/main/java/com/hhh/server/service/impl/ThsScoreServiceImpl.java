@@ -1,7 +1,11 @@
 package com.hhh.server.service.impl;
 
 import Ths.JDIBridge;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.hhh.server.logger.LeoLog;
+import com.hhh.server.mapper.ThsMemoirMapper;
 import com.hhh.server.mapper.ThsScoreMapper;
 import com.hhh.server.pojo.*;
 import com.hhh.server.service.ThsScoreService;
@@ -14,10 +18,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import cn.hutool.poi.excel.ExcelUtil;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +45,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
 
     @Autowired
     private ThsScoreMapper thsScoreMapper;
+
+    @Autowired
+    private ThsMemoirMapper thsMemoirMapper;
 
     /**
      * 同花顺用户名
@@ -735,7 +750,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      * @return
      */
     @Override
-    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq) {
+    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq, HttpServletResponse response) {
         List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
         //使用Collectors.groupingBy()方法将thsScoreResList按照swFirst字段进行分组
         Map<?, List<ThsScoreRes>> groupMap = null;
@@ -945,7 +960,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 thsScore.setDividend2021PCT(dividend2021RankPct);
                 thsScore.setDividend2021Score(dividend2021RankScore);
                 thsScore.setDividend2020PCT(dividend2020RankPct);
-                thsScore.setDividend2022Score(dividend2020RankScore);
+                thsScore.setDividend2020Score(dividend2020RankScore);
                 thsScore.setDividendAverage3PCT(dividendAverage3RankPct);
                 thsScore.setDividendAverage3Score(dividendAverage3RankScore);
                 thsScore.setPBPCT(PBRankPct);
@@ -975,22 +990,97 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             }
         }
         log.info("ThsScoreServiceImpl | rankPctAndScore | rankPCTScoreRes = {}", thsScoreRes);
+        List<ThsScoreRes> thsScoreResult;
+        if (rankPCTScoreReq.getType() == 1) {
+            thsScoreResult = thsScoreRes.stream()
+                    .filter(result -> result.getStockCode().contains(rankPCTScoreReq.getKeyWord()) || result.getStockName().contains(rankPCTScoreReq.getKeyWord()))
+                    .filter(result -> result.getSwFirst().contains(rankPCTScoreReq.getSwAttr()) || result.getSwSecond().contains(rankPCTScoreReq.getSwAttr()))
+                    .filter(result -> result.getCorpAttr().contains(rankPCTScoreReq.getCorpAttr()))
+                    .collect(Collectors.toList());
+            // 导出excel
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.addHeaderAlias("stockCode","证券代码");
+            writer.addHeaderAlias("stockName","证券名称");
+            writer.addHeaderAlias("swFirst","申万一级");
+            writer.addHeaderAlias("swSecond","申万二级");
+            writer.addHeaderAlias("corpAttr","企业属性");
+            writer.addHeaderAlias("dividend12","股息率近12个月");
+            writer.addHeaderAlias("dividend2022","股息率2022");
+            writer.addHeaderAlias("dividend2021","股息率2021");
+            writer.addHeaderAlias("dividend2020","股息率2020");
+            writer.addHeaderAlias("dividendAverage3","股息率过去3年平均值");
+            writer.addHeaderAlias("PB","PB最新");
+            writer.addHeaderAlias("turnoverRateByWeek","周换手率");
+            writer.addHeaderAlias("freeFlowMarketValue","自由流通市值");
+            writer.addHeaderAlias("allMarketValue","总市值");
+            writer.addHeaderAlias("ROEByQuarter","ROE最新季度");
+            writer.addHeaderAlias("ROE2022","ROE2022");
+            writer.addHeaderAlias("ROE2021","ROE2021");
+            writer.addHeaderAlias("ROE2020","ROE2020");
+            writer.addHeaderAlias("ROEAverage3","ROE过去3年平均值");
+            writer.addHeaderAlias("revenue","营收增速最新季度");
+            writer.addHeaderAlias("netProfit","净利增速最新季度");
+            writer.addHeaderAlias("dividend12PCT","股息率近12个月PCT");
+            writer.addHeaderAlias("dividend12Score","股息率近12个月");
+            writer.addHeaderAlias("dividend2022PCT","股息率2022PCT");
+            writer.addHeaderAlias("dividend2022Score","股息率2022Score");
+            writer.addHeaderAlias("dividend2021PCT","股息率2021PCT");
+            writer.addHeaderAlias("dividend2021Score","股息率2021Score");
+            writer.addHeaderAlias("dividend2020PCT","股息率2020PCT");
+            writer.addHeaderAlias("dividend2020Score","股息率2020Score");
+            writer.addHeaderAlias("dividendAverage3PCT","股息率过去3年平均值PCT");
+            writer.addHeaderAlias("dividendAverage3Score","股息率过去3年平均值Score");
+            writer.addHeaderAlias("PBPCT","PB最新PCT");
+            writer.addHeaderAlias("PBScore","PB最新Score");
+            writer.addHeaderAlias("turnoverRateByWeekPCT","周换手率PCT");
+            writer.addHeaderAlias("turnoverRateByWeekScore","周换手率Score");
+            writer.addHeaderAlias("freeFlowMarketValuePCT","自由流通市值PCT");
+            writer.addHeaderAlias("freeFlowMarketValueScore","自由流通市值Score");
+            writer.addHeaderAlias("allMarketValuePCT","总市值PCT");
+            writer.addHeaderAlias("allMarketValueScore","总市值Score");
+            writer.addHeaderAlias("ROEByQuarterPCT","ROE最新季度PCT");
+            writer.addHeaderAlias("ROEByQuarterScore","ROE最新季度Score");
+            writer.addHeaderAlias("ROE2022PCT","ROE2022PCT");
+            writer.addHeaderAlias("ROE2022Score","ROE2022Score");
+            writer.addHeaderAlias("ROE2021PCT","ROE2021PCT");
+            writer.addHeaderAlias("ROE2021Score","ROE2021Score");
+            writer.addHeaderAlias("ROE2020PCT","ROE2020PCT");
+            writer.addHeaderAlias("ROE2020Score","ROE2020Score");
+            writer.addHeaderAlias("ROEAverage3PCT","ROE过去3年平均值PCT");
+            writer.addHeaderAlias("ROEAverage3Score","ROE过去3年平均值Score");
+            writer.addHeaderAlias("revenuePCT","营收增速最新季度PCT");
+            writer.addHeaderAlias("revenueScore","营收增速最新季度Score");
+            writer.addHeaderAlias("netProfitPCT","净利增速最新季度PCT");
+            writer.addHeaderAlias("netProfitScore","净利增速最新季度Score");
+            writer.write(thsScoreResult, true);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename=result.xls");
+            ServletOutputStream out = null;
+            try {
+                out = response.getOutputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            writer.flush(out, true);
+            writer.close();
+            IoUtil.close(out);
+        }
         BasicPageRes<RespRes> res = new BasicPageRes<>();
         if (thsScoreRes.size() == 0) {
             res.setPage(null);
             res.setCode(500);
             res.setMessage("获取失败");
-            res.setVar(new ArrayList<>());
+            res.setResult(new ArrayList<>());
             return res;
         }
         LeoPage leoPage = new LeoPage(rankPCTScoreReq.getPageNo(), rankPCTScoreReq.getPageSize());
-        List<ThsScoreRes> thsScoreResult = thsScoreRes.stream()
+        thsScoreResult = thsScoreRes.stream()
                 .filter(result -> result.getStockCode().contains(rankPCTScoreReq.getKeyWord()) || result.getStockName().contains(rankPCTScoreReq.getKeyWord()))
                 .filter(result -> result.getSwFirst().contains(rankPCTScoreReq.getSwAttr()) || result.getSwSecond().contains(rankPCTScoreReq.getSwAttr()))
                 .filter(result -> result.getCorpAttr().contains(rankPCTScoreReq.getCorpAttr()))
                 .skip((long) (rankPCTScoreReq.getPageNo() - 1) * rankPCTScoreReq.getPageSize())
                 .limit(rankPCTScoreReq.getPageSize())
-                .collect(Collectors.toList());res.setCode(200);
+                .collect(Collectors.toList());
         int totalCount = (int) thsScoreRes.stream()
                 .filter(result -> result.getStockCode().contains(rankPCTScoreReq.getKeyWord()) || result.getStockName().contains(rankPCTScoreReq.getKeyWord()))
                 .filter(result -> result.getSwFirst().contains(rankPCTScoreReq.getSwAttr()) || result.getSwSecond().contains(rankPCTScoreReq.getSwAttr()))
@@ -1002,7 +1092,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         res.setPage(leoPage);
         res.setCode(200);
         res.setMessage("获取成功");
-        res.setVar(thsScoreResult);
+        res.setResult(thsScoreResult);
         return res;
     }
 
@@ -1042,6 +1132,160 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         return RespRes.success("获取成功", result);
     }
 
+    /**
+     * 新增同花顺预测评级,机构预测明细表
+     *
+     * @return
+     */
+    @Override
+    public RespRes insertThsMemoir() {
+        log.info("ThsScoreServiceImpl | insertThsMemoir | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load(thsLoadConf);
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | insertThsMemoir | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    LocalDate startDate = LocalDate.of(2023, 2, 1);
+                    LocalDate endDate = LocalDate.of(2023, 6, 8);
+                    // 从开始日期开始遍历
+                    LocalDate currentDate = startDate;
+                    // 遍历到结束日期的下一天
+                    while (currentDate.isBefore(endDate.plusDays(1))) {
+                        String date = currentDate.toString().replace("-", "");
+                        log.info("ThsScoreServiceImpl | insertThsMemoir | selectDate = {}", date);
+                        //预测评级 机构预测明细
+                        String result = JDIBridge.THS_DR("p00324","bgyear=2023;p0=最新;sdate=" + date + ";edate=" + date + ";blockFill=IFindKey@001005010@","jydm:Y,jydm_mc:Y,p00324_f001:Y,p00324_f002:Y,p00324_f036:Y,p00324_f037:Y,p00324_f045:Y,p00324_f003:Y,p00324_f004:Y,p00324_f005:Y,p00324_f038:Y,p00324_f039:Y,p00324_f006:Y,p00324_f007:Y,p00324_f008:Y,p00324_f009:Y,p00324_f010:Y,p00324_f011:Y,p00324_f012:Y,p00324_f013:Y,p00324_f014:Y,p00324_f046:Y,p00324_f047:Y,p00324_f048:Y,p00324_f015:Y,p00324_f016:Y,p00324_f017:Y,p00324_f018:Y,p00324_f019:Y,p00324_f020:Y,p00324_f021:Y,p00324_f022:Y,p00324_f023:Y,p00324_f024:Y,p00324_f025:Y,p00324_f026:Y,p00324_f027:Y,p00324_f028:Y,p00324_f029:Y,p00324_f030:Y,p00324_f033:Y");
+                        JSONObject jsonObject = JSON.parseObject(result);
+                        JSONArray tablesArray = jsonObject.getJSONArray("tables");
+                        if (tablesArray.size() == 0) {
+                            return RespRes.error("获取失败");
+                        }
+                        List<ThsMemoirRes> memoirList = new ArrayList<>();
+                        // 遍历 tables 数组，将数据解析为 Memoir 对象并添加到 memoirList 中
+                        for (int i = 0; i < tablesArray.size(); i++) {
+                            JSONObject tableData = tablesArray.getJSONObject(i).getJSONObject("table");
+                            JSONArray jydmArray = tableData.getJSONArray("jydm");
+                            JSONArray jydmMcArray = tableData.getJSONArray("jydm_mc");
+                            JSONArray p00324_f001Array = tableData.getJSONArray("p00324_f001");
+                            JSONArray p00324_f002Array = tableData.getJSONArray("p00324_f002");
+                            JSONArray p00324_f036Array = tableData.getJSONArray("p00324_f036");
+                            JSONArray p00324_f037Array = tableData.getJSONArray("p00324_f037");
+                            JSONArray p00324_f045Array = tableData.getJSONArray("p00324_f045");
+                            JSONArray p00324_f003Array = tableData.getJSONArray("p00324_f003");
+                            JSONArray p00324_f004Array = tableData.getJSONArray("p00324_f004");
+                            JSONArray p00324_f005Array = tableData.getJSONArray("p00324_f005");
+                            JSONArray p00324_f038Array = tableData.getJSONArray("p00324_f038");
+                            JSONArray p00324_f039Array = tableData.getJSONArray("p00324_f039");
+                            JSONArray p00324_f006Array = tableData.getJSONArray("p00324_f006");
+                            JSONArray p00324_f007Array = tableData.getJSONArray("p00324_f007");
+                            JSONArray p00324_f008Array = tableData.getJSONArray("p00324_f008");
+                            JSONArray p00324_f009Array = tableData.getJSONArray("p00324_f009");
+                            JSONArray p00324_f010Array = tableData.getJSONArray("p00324_f010");
+                            JSONArray p00324_f011Array = tableData.getJSONArray("p00324_f011");
+                            JSONArray p00324_f012Array = tableData.getJSONArray("p00324_f012");
+                            JSONArray p00324_f013Array = tableData.getJSONArray("p00324_f013");
+                            JSONArray p00324_f014Array = tableData.getJSONArray("p00324_f014");
+                            JSONArray p00324_f046Array = tableData.getJSONArray("p00324_f046");
+                            JSONArray p00324_f047Array = tableData.getJSONArray("p00324_f047");
+                            JSONArray p00324_f048Array = tableData.getJSONArray("p00324_f048");
+                            JSONArray p00324_f015Array = tableData.getJSONArray("p00324_f015");
+                            JSONArray p00324_f016Array = tableData.getJSONArray("p00324_f016");
+                            JSONArray p00324_f017Array = tableData.getJSONArray("p00324_f017");
+                            JSONArray p00324_f018Array = tableData.getJSONArray("p00324_f018");
+                            JSONArray p00324_f019Array = tableData.getJSONArray("p00324_f019");
+                            JSONArray p00324_f020Array = tableData.getJSONArray("p00324_f020");
+                            JSONArray p00324_f021Array = tableData.getJSONArray("p00324_f021");
+                            JSONArray p00324_f022Array = tableData.getJSONArray("p00324_f022");
+                            JSONArray p00324_f023Array = tableData.getJSONArray("p00324_f023");
+                            JSONArray p00324_f024Array = tableData.getJSONArray("p00324_f024");
+                            JSONArray p00324_f025Array = tableData.getJSONArray("p00324_f025");
+                            JSONArray p00324_f026Array = tableData.getJSONArray("p00324_f026");
+                            JSONArray p00324_f027Array = tableData.getJSONArray("p00324_f027");
+                            JSONArray p00324_f028Array = tableData.getJSONArray("p00324_f028");
+                            JSONArray p00324_f029Array = tableData.getJSONArray("p00324_f029");
+                            JSONArray p00324_f030Array = tableData.getJSONArray("p00324_f030");
+                            JSONArray p00324_f033Array = tableData.getJSONArray("p00324_f033");
+                            for (int j = 0; j < jydmArray.size(); j++) {
+                                ThsMemoirRes thsMemoirRes = new ThsMemoirRes();
+                                thsMemoirRes.setStockCode(jydmArray.getString(j));
+                                thsMemoirRes.setStockName(jydmMcArray.getString(j));
+                                thsMemoirRes.setResearchOrganization(p00324_f001Array.getString(j));
+                                thsMemoirRes.setResearchers(p00324_f002Array.getString(j));
+                                thsMemoirRes.setReportType(p00324_f036Array.getString(j));
+                                thsMemoirRes.setReportName(p00324_f037Array.getString(j));
+                                thsMemoirRes.setReportPages(p00324_f045Array.getString(j));
+                                thsMemoirRes.setInvestmentRateNew(p00324_f003Array.getString(j));
+                                thsMemoirRes.setInvestmentRatePre(p00324_f004Array.getString(j));
+                                thsMemoirRes.setInvestmentRateAdjustDirection(p00324_f005Array.getString(j));
+                                thsMemoirRes.setInvestmentRateTargetPrice(p00324_f038Array.getString(j));
+                                thsMemoirRes.setInvestmentRateResearchDigest(p00324_f039Array.getString(j));
+                                thsMemoirRes.setInvestmentRateDateNew(p00324_f006Array.getString(j));
+                                thsMemoirRes.setEps1(p00324_f007Array.getString(j));
+                                thsMemoirRes.setEps2(p00324_f008Array.getString(j));
+                                thsMemoirRes.setEps3(p00324_f009Array.getString(j));
+                                thsMemoirRes.setEps4(p00324_f010Array.getString(j));
+                                thsMemoirRes.setEpsPredictDate(p00324_f011Array.getString(j));
+                                thsMemoirRes.setEspIncreaseRate1(p00324_f012Array.getString(j));
+                                thsMemoirRes.setEspIncreaseRate2(p00324_f013Array.getString(j));
+                                thsMemoirRes.setEspIncreaseRate3(p00324_f014Array.getString(j));
+                                thsMemoirRes.setPerShareNetProfitIncreaseRate1(p00324_f046Array.getString(j));
+                                thsMemoirRes.setPerShareNetProfitIncreaseRate2(p00324_f047Array.getString(j));
+                                thsMemoirRes.setPerShareNetProfitIncreaseRate3(p00324_f048Array.getString(j));
+                                thsMemoirRes.setPE1(p00324_f015Array.getString(j));
+                                thsMemoirRes.setPE2(p00324_f016Array.getString(j));
+                                thsMemoirRes.setPE3(p00324_f017Array.getString(j));
+                                thsMemoirRes.setPE4(p00324_f018Array.getString(j));
+                                thsMemoirRes.setPEG1(p00324_f019Array.getString(j));
+                                thsMemoirRes.setPEG2(p00324_f020Array.getString(j));
+                                thsMemoirRes.setPEG3(p00324_f021Array.getString(j));
+                                thsMemoirRes.setNetProfit1(p00324_f022Array.getString(j));
+                                thsMemoirRes.setNetProfit2(p00324_f023Array.getString(j));
+                                thsMemoirRes.setNetProfit3(p00324_f024Array.getString(j));
+                                thsMemoirRes.setNetProfit4(p00324_f025Array.getString(j));
+                                thsMemoirRes.setRevenue1(p00324_f026Array.getString(j));
+                                thsMemoirRes.setRevenue2(p00324_f027Array.getString(j));
+                                thsMemoirRes.setRevenue3(p00324_f028Array.getString(j));
+                                thsMemoirRes.setRevenue4(p00324_f029Array.getString(j));
+                                thsMemoirRes.setStockPriceDataNew(p00324_f030Array.getString(j));
+                                thsMemoirRes.setDate(p00324_f033Array.getString(j));
+                                memoirList.add(thsMemoirRes);
+                            }
+                        }
+                        if (memoirList.size() > 0) {
+                            for (ThsMemoirRes thsMemoirRes : memoirList) {
+                                try {
+                                    thsMemoirMapper.insertMemoir(thsMemoirRes);
+                                } catch (Exception e) {
+                                    log.error("ThsScoreServiceImpl | insertThsMemoir | insertFail | Exception", e);
+                                }
+                            }
+                        }
+                        // 遍历到下一个日期
+                        currentDate = currentDate.plusDays(1);
+                    }
+                    log.info("ThsScoreServiceImpl insertThsMemoir insertEnd");
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | insertThsMemoir | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl insertThsMemoir THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | insertThsMemoir | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl insertThsMemoir Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("插入成功");
+    }
+
     public static void main(String[] args) {
         System.out.println(System.getProperty("java.library.path"));
         System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
@@ -1078,10 +1322,12 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 //营收增速最新一季度
 //                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_or_yoy_stock","20230331");
                 //净利增速最新一季度
-                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_np_yoy_stock","2023-03-31");
+//                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_np_yoy_stock","2023-03-31");
+                // 预测评级 机构预测明细
+                String result = JDIBridge.THS_DR("p00324","bgyear=2023;p0=最新;sdate=20230603;edate=20230603;blockFill=IFindKey@001005010@","jydm:Y,jydm_mc:Y,p00324_f001:Y,p00324_f002:Y,p00324_f036:Y,p00324_f037:Y,p00324_f045:Y,p00324_f003:Y,p00324_f004:Y,p00324_f005:Y,p00324_f038:Y,p00324_f039:Y,p00324_f006:Y,p00324_f007:Y,p00324_f008:Y,p00324_f009:Y,p00324_f010:Y,p00324_f011:Y,p00324_f012:Y,p00324_f013:Y,p00324_f014:Y,p00324_f046:Y,p00324_f047:Y,p00324_f048:Y,p00324_f015:Y,p00324_f016:Y,p00324_f017:Y,p00324_f018:Y,p00324_f019:Y,p00324_f020:Y,p00324_f021:Y,p00324_f022:Y,p00324_f023:Y,p00324_f024:Y,p00324_f025:Y,p00324_f026:Y,p00324_f027:Y,p00324_f028:Y,p00324_f029:Y,p00324_f030:Y,p00324_f033:Y");
                 System.out.println("result == " + result );
                 JSONObject jsonObject = JSON.parseObject(result);
-                System.out.println(jsonObject);
+//                System.out.println(jsonObject);
                 JDIBridge.THS_iFinDLogout();
                 System.out.println("THS_iFinDLogout");
                 break;

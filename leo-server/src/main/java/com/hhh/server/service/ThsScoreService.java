@@ -5,6 +5,7 @@ import com.hhh.server.pojo.RankPCTScoreReq;
 import com.hhh.server.pojo.RespRes;
 import com.hhh.server.pojo.ThsScoreRes;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public interface ThsScoreService {
      *
      * @return
      */
-    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq);
+    public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq, HttpServletResponse response);
 
     /**
      * 测试接口
@@ -90,5 +91,12 @@ public interface ThsScoreService {
      * @return
      */
     public RespRes thsTest();
+
+    /**
+     * 新增同花顺预测评级,机构预测明细表
+     *
+     * @return
+     */
+    public RespRes insertThsMemoir();
 
 }

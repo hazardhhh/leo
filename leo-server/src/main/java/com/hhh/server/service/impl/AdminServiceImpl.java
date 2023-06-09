@@ -60,15 +60,16 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminRes> impleme
      */
     @Override
     public RespRes login(String username, String password, String code, HttpServletRequest request) {
-        String captcha = (String) request.getSession().getAttribute("captcha");
-        if (captcha == null) {
-            log.info("请先获取验证码");
-            return RespRes.error("请先获取验证码");
-        }
-        if (StringUtils.isBlank(code) || !captcha.equalsIgnoreCase(code)) {
-            log.info("验证码输入错误, 请重新输入");
-            return RespRes.error("验证码输入错误, 请重新输入");
-        }
+        log.info("AdminServiceImpl | login | headerNames = {}", request.getHeaderNames());
+//        String captcha = (String) request.getSession().getAttribute("captcha");
+//        if (captcha == null) {
+//            log.info("请先获取验证码");
+//            return RespRes.error("请先获取验证码");
+//        }
+//        if (StringUtils.isBlank(code) || !captcha.equalsIgnoreCase(code)) {
+//            log.info("验证码输入错误, 请重新输入");
+//            return RespRes.error("验证码输入错误, 请重新输入");
+//        }
         // 登录
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (null == userDetails || !passwordEncoder.matches(password, userDetails.getPassword())) {
