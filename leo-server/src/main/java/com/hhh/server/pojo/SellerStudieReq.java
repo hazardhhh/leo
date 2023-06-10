@@ -11,22 +11,13 @@ import lombok.NoArgsConstructor;
  * @since 2023-05-18
  */
 @Data
-@ApiModel("计算排名及打分")
+@ApiModel("市场情绪因子,卖方研报")
 @AllArgsConstructor
 @NoArgsConstructor
-public class RankPCTScoreReq {
-
-    @ApiModelProperty(value = "1 申万一级 2 申万一级及企业属性 3 申万二级 4 申万二级及企业属性")
-    private Integer groupByType;
+public class SellerStudieReq {
 
     @ApiModelProperty(value = "关键字")
     private String keyWord;
-
-    @ApiModelProperty(value = "申万属性")
-    private String swAttr;
-
-    @ApiModelProperty(value = "企业属性")
-    private String corpAttr;
 
     @ApiModelProperty(value = "当前页")
     private Integer pageNo;

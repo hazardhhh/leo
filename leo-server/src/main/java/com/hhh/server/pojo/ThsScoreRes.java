@@ -7,12 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Description 同花顺打分结果返回
+ * @Description 同花顺打分结果
  * @Author HHH
  * @Date 2023/5/19 22:37
  */
 @Data
-@ApiModel("同花顺打分结果实体类")
+@ApiModel("同花顺打分结果")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThsScoreRes {

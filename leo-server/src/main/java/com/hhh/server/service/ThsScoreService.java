@@ -1,9 +1,6 @@
 package com.hhh.server.service;
 
-import com.hhh.server.pojo.BasicPageRes;
-import com.hhh.server.pojo.RankPCTScoreReq;
-import com.hhh.server.pojo.RespRes;
-import com.hhh.server.pojo.ThsScoreRes;
+import com.hhh.server.pojo.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -98,5 +95,12 @@ public interface ThsScoreService {
      * @return
      */
     public RespRes insertThsMemoir();
+
+    /**
+     * 获取市场情绪因子,卖方研报信息
+     *
+     * @return
+     */
+    public BasicPageRes<RespRes> getSellerStudieData(SellerStudieReq sellerStudieReq, HttpServletResponse response);
 
 }

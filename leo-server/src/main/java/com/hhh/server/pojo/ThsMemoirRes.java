@@ -7,12 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Description 同花顺打分结果返回
+ * @Description 同花顺预测评级,机构预测明细
  * @Author HHH
  * @Date 2023/5/19 22:37
  */
 @Data
-@ApiModel("同花顺预测评级,机构预测明细实体类")
+@ApiModel("同花顺预测评级,机构预测明细")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThsMemoirRes {
@@ -140,7 +140,7 @@ public class ThsMemoirRes {
     @ApiModelProperty(value = "股票最新收盘价")
     private String stockPriceDataNew;
 
-    @ApiModelProperty(value = "日期")
+    @ApiModelProperty(value = "获取日期")
     private String date;
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  * @since 2023-05-18
  */
 @Data
-@ApiModel("更新密码实体类")
+@ApiModel("更新密码")
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePwdReq {

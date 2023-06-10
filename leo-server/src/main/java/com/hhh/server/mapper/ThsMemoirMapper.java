@@ -12,11 +12,25 @@ import java.util.List;
 public interface ThsMemoirMapper {
 
     /**
-     * 获取所有结果
+     * 获取所有结果,投资评级日期
      *
      * @return
      */
-    public List<ThsMemoirRes> getThsMemoirResult();
+    public List<ThsMemoirRes> getThsMemoirResultByDate(String investmentRateDateNew);
+
+    /**
+     * 获取所有结果,最近一周
+     *
+     * @return
+     */
+    public List<ThsMemoirRes> getThsMemoirResultByWeek();
+
+    /**
+     * 获取所有结果,最近一个月
+     *
+     * @return
+     */
+    public List<ThsMemoirRes> getThsMemoirResultByMonth();
 
     /**
      * 新增同花顺预测评级,机构预测明细表

@@ -48,8 +48,16 @@
         <result column="date" property="date"/>
     </resultMap>
 
-    <select id="getThsMemoirResult" resultMap="ThsMemoirResultMap">
-        SELECT * FROM ths_memoir
+    <select id="getThsMemoirResultByDate" resultMap="ThsMemoirResultMap">
+        SELECT * FROM ths_memoir WHERE investment_rate_date_new = #{investmentRateDateNew}
+    </select>
+
+    <select id="getThsMemoirResultByWeek" resultMap="ThsMemoirResultMap">
+        SELECT * FROM ths_memoir WHERE STR_TO_DATE(investment_rate_date_new, '%Y/%m/%d') > DATE_SUB(NOW(), INTERVAL 7 DAY)
+    </select>
+
+    <select id="getThsMemoirResultByMonth" resultMap="ThsMemoirResultMap">
+        SELECT * FROM ths_memoir WHERE investment_rate_date_new > DATE_SUB(NOW(), INTERVAL 1 MONTH)
     </select>
 
     <insert id="insertMemoir" parameterType="com.hhh.server.pojo.ThsMemoirRes" useGeneratedKeys="true" keyProperty="id">

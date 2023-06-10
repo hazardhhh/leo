@@ -9,10 +9,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class XlsxReader {
@@ -49,7 +47,8 @@ public class XlsxReader {
                         }
                     }
 //                    System.out.println(colIndexList);
-                } else { // 读取数据行
+                } else {
+                    // 读取数据行
                     String stockCode = null;
 //                    String dividend_2022 = null;
                     String swSecond = null;
@@ -115,7 +114,7 @@ public class XlsxReader {
     }
 
     public static void main(String[] args) {
-        String fileName = "F:\\打分\\04.打分算法\\申万一级企业属性.xlsx";
+        String fileName = "F:\\国信金工\\【国信金工】6月券商金股统计_50家.xlsx";
         String url = "jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT";
         String user = "root";
         String password = "111111";
@@ -125,7 +124,7 @@ public class XlsxReader {
             // 1. 获取数据库连接
             conn = DriverManager.getConnection(url, user, password);
             // 2. 准备 SQL 语句
-            String sql = "INSERT INTO ths_memoir (stock_code, stock_name) VALUES (?, ?)";
+            String sql = "INSERT INTO gxjg (date, securities_name, stock_code, stock_name, release_date, specific_time, data_source) VALUES (?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             // 3. 读取 xlsx 文件
             System.out.println("start");
@@ -141,21 +140,33 @@ public class XlsxReader {
                     while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
                         String header = cell.getStringCellValue().trim();
-                        if (header.equals("证券代码") || header.equals("证券名称")) {
+                        if (header.equals("日期") || header.equals("券商名称") || header.equals("股票代码") || header.equals("股票名称")
+                                || header.equals("发布日期") || header.equals("具体时间") || header.equals("数据来源")) {
                             colIndexList.add(cell.getColumnIndex());
                         }
                     }
 //                    System.out.println(colIndexList);
-                } else { // 读取数据行
+                } else {
+                    // 读取数据行
                     for (int i = 0; i < colIndexList.size(); i++) {
                         int colIndex = colIndexList.get(i);
                         Cell cell = row.getCell(colIndex);
                         if (cell != null) {
                             if (cell.getCellType() == CellType.NUMERIC) {
                                 double value = cell.getNumericCellValue();
-                                DecimalFormat df = new DecimalFormat("0.0000");
-                                String formattedValue = df.format(value);
+//                                DecimalFormat df = new DecimalFormat("0.0000");
+//                                String formattedValue = df.format(value);
 //                                System.out.println(formattedValue);
+//                                stmt.setString(i + 1, formattedValue);
+                                // 国信金工时间格式转化
+                                String formattedValue = "";
+                                if (value <= 1) {
+                                    int hours = (int) (value * 24);  // 计算时间小时数
+                                    int minutes = (int) ((value * 24 - hours) * 60);  // 计算时间分钟数
+                                    formattedValue = String.format("%02d:%02d", hours, minutes);
+                                } else {
+                                    formattedValue = String.format("%08.0f", value);
+                                }
                                 stmt.setString(i + 1, formattedValue);
                             } else {
                                 String value = cell.getStringCellValue();

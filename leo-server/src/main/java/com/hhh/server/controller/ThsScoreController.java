@@ -3,6 +3,7 @@ package com.hhh.server.controller;
 import com.hhh.server.pojo.BasicPageRes;
 import com.hhh.server.pojo.RankPCTScoreReq;
 import com.hhh.server.pojo.RespRes;
+import com.hhh.server.pojo.SellerStudieReq;
 import com.hhh.server.service.ThsScoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,10 +86,16 @@ public class ThsScoreController {
         return thsScoreService.thsTest();
     }
 
-    @PostMapping("/thsScore/insertThsMemoir")
-    @ApiOperation(value = "新增同花顺预测评级,机构预测明细表")
-    public RespRes insertThsMemoir() {
-        return thsScoreService.insertThsMemoir();
+//    @PostMapping("/thsScore/insertThsMemoir")
+//    @ApiOperation(value = "新增同花顺预测评级,机构预测明细表")
+//    public RespRes insertThsMemoir() {
+//        return thsScoreService.insertThsMemoir();
+//    }
+
+    @PostMapping("/thsScore/getSellerStudieData")
+    @ApiOperation(value = "获取卖方研报信息")
+    public BasicPageRes<RespRes> getSellerStudieData(@RequestBody SellerStudieReq sellerStudieReq, HttpServletResponse response) {
+        return thsScoreService.getSellerStudieData(sellerStudieReq, response);
     }
 
 }
