@@ -19,6 +19,9 @@ public class SellerStudieReq {
     @ApiModelProperty(value = "关键字")
     private String keyWord;
 
+    @ApiModelProperty(value = "申万属性")
+    private String swAttr;
+
     @ApiModelProperty(value = "当前页")
     private Integer pageNo;
 
@@ -27,5 +30,8 @@ public class SellerStudieReq {
 
     @ApiModelProperty(value = "0 查询 1 导出")
     private Integer type;
+
+    @ApiModelProperty(value = "降序排序")
+    private Integer sort;
 
 }

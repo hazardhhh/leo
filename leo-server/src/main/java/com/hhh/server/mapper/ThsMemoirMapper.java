@@ -40,4 +40,16 @@ public interface ThsMemoirMapper {
      */
     public int insertMemoir(ThsMemoirRes memoirResList);
 
+
+    /**
+     * 获取所有结果,最近一个月,详情信息
+     *
+     * @param time 1周 2月
+     * @param isDepthReport 是否深度报告
+     * @param isFirstRecommend 是否首次推荐
+     * @param stockCode 证券代码
+     * @return
+     */
+    public List<ThsMemoirRes> getThsMemoirResultDetails(int time, boolean isDepthReport, boolean isFirstRecommend, String stockCode);
+
 }

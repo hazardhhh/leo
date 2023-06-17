@@ -23,6 +23,9 @@ public class SellerStudieRes {
     @ApiModelProperty(value = "证券名称")
     private String stockName;
 
+    @ApiModelProperty(value = "申万一级行业")
+    private String swFirstIndustry;
+
     @ApiModelProperty(value = "深度报告过去一周")
     private String depthStudieByWeek;
 

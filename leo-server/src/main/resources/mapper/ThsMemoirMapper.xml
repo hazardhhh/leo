@@ -73,4 +73,24 @@
                 #{netProfit3}, #{netProfit4}, #{revenue1}, #{revenue2}, #{revenue3}, #{revenue4}, #{stockPriceDataNew}, #{date})
     </insert>
 
+    <select id="getThsMemoirResultDetails" resultMap="ThsMemoirResultMap">
+        SELECT * FROM ths_memoir
+        WHERE
+        <choose>
+            <when test="time == 1">
+                STR_TO_DATE(investment_rate_date_new, '%Y/%m/%d') > DATE_SUB(NOW(), INTERVAL 7 DAY)
+            </when>
+            <when test="time == 2">
+                investment_rate_date_new > DATE_SUB(NOW(), INTERVAL 1 MONTH)
+            </when>
+        </choose>
+        <if test="isDepthReport">
+            AND report_pages > 20
+        </if>
+        <if test="isFirstRecommend">
+            AND report_name LIKE '%首次覆盖%'
+        </if>
+        AND stock_code = #{stockCode}
+    </select>
+
 </mapper>

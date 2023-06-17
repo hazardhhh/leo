@@ -58,5 +58,5 @@ ths:
   thsPassWord: 666888
   loadConf: F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll
   task:
-    enalbe: true
+    enalbe: false
     insertThsMemoir: 0 58 11,18,23 * * ?

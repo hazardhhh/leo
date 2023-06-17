@@ -103,4 +103,18 @@ public interface ThsScoreService {
      */
     public BasicPageRes<RespRes> getSellerStudieData(SellerStudieReq sellerStudieReq, HttpServletResponse response);
 
+    /**
+     * 获取市场情绪因子,卖方研报信息详情
+     *
+     * @return
+     */
+    public RespRes getSellerStudieDataDetails(SellerStudieDetailsReq sellerStudieDetailsReq);
+
+    /**
+     * 更新申万所属行业字典
+     *
+     * @return
+     */
+    public RespRes updateDictSwData();
+
 }

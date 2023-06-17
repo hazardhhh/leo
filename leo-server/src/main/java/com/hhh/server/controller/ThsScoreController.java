@@ -1,9 +1,6 @@
 package com.hhh.server.controller;
 
-import com.hhh.server.pojo.BasicPageRes;
-import com.hhh.server.pojo.RankPCTScoreReq;
-import com.hhh.server.pojo.RespRes;
-import com.hhh.server.pojo.SellerStudieReq;
+import com.hhh.server.pojo.*;
 import com.hhh.server.service.ThsScoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 同花顺接口
@@ -96,6 +94,18 @@ public class ThsScoreController {
     @ApiOperation(value = "获取卖方研报信息")
     public BasicPageRes<RespRes> getSellerStudieData(@RequestBody SellerStudieReq sellerStudieReq, HttpServletResponse response) {
         return thsScoreService.getSellerStudieData(sellerStudieReq, response);
+    }
+
+    @PostMapping("/thsScore/getSellerStudieDataDetails")
+    @ApiOperation(value = "获取卖方研报信息详情")
+    public RespRes getSellerStudieDataDetails(@RequestBody SellerStudieDetailsReq sellerStudieDetailsReq) {
+        return thsScoreService.getSellerStudieDataDetails(sellerStudieDetailsReq);
+    }
+
+    @PostMapping("/thsScore/updateDictSwData")
+    @ApiOperation(value = "更新申万所属行业字典")
+    public RespRes updateDictSwData() {
+        return thsScoreService.updateDictSwData();
     }
 
 }

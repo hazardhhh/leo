@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.hhh.server.logger.LeoLog;
+import com.hhh.server.mapper.DictSwMapper;
 import com.hhh.server.mapper.GxjgMapper;
 import com.hhh.server.mapper.ThsMemoirMapper;
 import com.hhh.server.mapper.ThsScoreMapper;
@@ -50,6 +51,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
 
     @Autowired
     private GxjgMapper gxjgMapper;
+
+    @Autowired
+    private DictSwMapper dictSwMapper;
 
     /**
      * 同花顺用户名
@@ -805,23 +809,23 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             List<ThsScoreRes> groupList = null;
             if (rankPCTScoreReq.getGroupByType() == 1) {
                 String swFirst = (String) entry.getKey();
-                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swFirst);
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swFirst);
                 groupList = entry.getValue();
             } else if (rankPCTScoreReq.getGroupByType() == 2) {
                 Tuple2<String, String> compKey = (Tuple2<String, String>) entry.getKey();
                 String swFirst = compKey._1;
                 String corpAttr = compKey._2;
-                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swFirst, corpAttr);
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swFirst, corpAttr);
                 groupList = entry.getValue();
             } else if (rankPCTScoreReq.getGroupByType() == 3) {
                 String swSecond = (String) entry.getKey();
-                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swSecond);
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy = {}", swSecond);
                 groupList = entry.getValue();
             } else if (rankPCTScoreReq.getGroupByType() == 4) {
                 Tuple2<String, String> compKey = (Tuple2<String, String>) entry.getKey();
                 String swSecond = compKey._1;
                 String corpAttr = compKey._2;
-                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swSecond, corpAttr);
+//                log.info("ThsScoreServiceImpl | rankPctAndScore | groupBy1 = {} | groupBy2 = {}", swSecond, corpAttr);
                 groupList = entry.getValue();
             } else {
                 return null;
@@ -1345,9 +1349,11 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     public BasicPageRes<RespRes> getSellerStudieData(SellerStudieReq sellerStudieReq, HttpServletResponse response) {
         List<ThsMemoirRes> memoirResListByWeek = thsMemoirMapper.getThsMemoirResultByWeek();
         List<ThsMemoirRes> memoirResListByMonth = thsMemoirMapper.getThsMemoirResultByMonth();
+        List<DictSwRes> swIndustry = dictSwMapper.getSwIndustry();
         List<SellerStudieRes> sellerStudieResList = new ArrayList<>();
         Map<String, String> depthStuideStockNameMap = new HashMap<>();
         Map<String, String> firstStudieStockNameMap = new HashMap<>();
+        Map<String, String> swIndustryMap = new HashMap<>();
         Map<String, Integer> depthStuideByWeekMap = new HashMap<>();
         Map<String, Integer> depthStuideByMonthMap = new HashMap<>();
         Map<String, Integer> firstStudieByWeekMap = new HashMap<>();
@@ -1388,6 +1394,11 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 firstStudieByMonthMap.merge(stockCode, 1, Integer::sum);
             }
         }
+        // 获取申万一级行业
+        for (DictSwRes dictSwRes : swIndustry) {
+            String stockCode = dictSwRes.getStockCode();
+            swIndustryMap.put(stockCode, dictSwRes.getFirstIndustry());
+        }
         for (Map.Entry<String, Integer> entry : firstStudieByMonthMap.entrySet()) {
             String stockCode = entry.getKey();
             int firstStudieByMonth = entry.getValue();
@@ -1400,6 +1411,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             SellerStudieRes sellerStudieRes = new SellerStudieRes();
             sellerStudieRes.setStockCode(stockCode);
             sellerStudieRes.setStockName(firstStudieStockNameMap.get(stockCode));
+            sellerStudieRes.setSwFirstIndustry(swIndustryMap.get(stockCode));
             sellerStudieRes.setDepthStudieByWeek(String.valueOf(depthStuideByWeek));
             sellerStudieRes.setDepthStudieByMonth(String.valueOf(depthStuideByMonth));
             sellerStudieRes.setFirstStudieByWeek(String.valueOf(firstStudieByWeek));
@@ -1419,6 +1431,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 SellerStudieRes sellerStudieRes = new SellerStudieRes();
                 sellerStudieRes.setStockCode(stockCode);
                 sellerStudieRes.setStockName(depthStuideStockNameMap.get(stockCode));
+                sellerStudieRes.setSwFirstIndustry(swIndustryMap.get(stockCode));
                 sellerStudieRes.setDepthStudieByWeek(String.valueOf(depthStuideByWeek));
                 sellerStudieRes.setDepthStudieByMonth(String.valueOf(depthStuideByMonth));
                 sellerStudieRes.setFirstStudieByWeek("0");
@@ -1438,6 +1451,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             ExcelWriter writer = ExcelUtil.getWriter(true);
             writer.addHeaderAlias("stockCode","证券代码");
             writer.addHeaderAlias("stockName","证券名称");
+            writer.addHeaderAlias("swFirstIndustry","申万一级行业");
             writer.addHeaderAlias("depthStudieByWeek","深度报告过去一周");
             writer.addHeaderAlias("depthStudieByMonth","深度报告过去一个月");
             writer.addHeaderAlias("firstStudieByWeek","首次推荐过去一周");
@@ -1466,15 +1480,23 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             return res;
         }
         LeoPage leoPage = new LeoPage(sellerStudieReq.getPageNo(), sellerStudieReq.getPageSize());
-        sellerStudieResResult = sellerStudieResList.stream()
+        List<SellerStudieRes> filteredList = sellerStudieResList.stream()
                 .filter(result -> result.getStockCode().contains(sellerStudieReq.getKeyWord()) || result.getStockName().contains(sellerStudieReq.getKeyWord()))
+                .filter(result -> result.getSwFirstIndustry() != null && result.getSwFirstIndustry().contains(sellerStudieReq.getSwAttr()))
+                .collect(Collectors.toList());
+        // 降序排序
+        if (sellerStudieReq.getSort() > 0 && sellerStudieReq.getSort() <= 6) {
+            Comparator<SellerStudieRes> comparator = getComparatorBySort(sellerStudieReq.getSort());
+            if (comparator != null) {
+                filteredList = filteredList.stream().sorted(comparator).collect(Collectors.toList());
+            }
+        }
+        int totalCount = filteredList.size();
+        int totalPageSum = (int) Math.ceil((double) totalCount / sellerStudieReq.getPageSize());
+        sellerStudieResResult = filteredList.stream()
                 .skip((long) (sellerStudieReq.getPageNo() - 1) * sellerStudieReq.getPageSize())
                 .limit(sellerStudieReq.getPageSize())
                 .collect(Collectors.toList());
-        int totalCount = (int) sellerStudieResList.stream()
-                .filter(result -> result.getStockCode().contains(sellerStudieReq.getKeyWord()) || result.getStockName().contains(sellerStudieReq.getKeyWord()))
-                .count();
-        int totalPageSum = (int) Math.ceil((double) totalCount / sellerStudieReq.getPageSize());
         leoPage.setTotalCount((long) totalCount);
         leoPage.setTotalPageNum(totalPageSum);
         res.setPage(leoPage);
@@ -1482,6 +1504,122 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         res.setMessage("获取成功");
         res.setResult(sellerStudieResResult);
         return res;
+    }
+
+    /**
+     * 降序排序 1 深度报告过去一周 2 深度报告过去一个月 3 首次推荐过去一周
+     *        4 首次推荐过去一个月 5 被券商金股覆盖的数量当月 6被券商金股覆盖的数量上个月
+     *
+     * @param sort
+     * @return
+     */
+    private Comparator<SellerStudieRes> getComparatorBySort(int sort) {
+        switch (sort) {
+            case 1:
+                return Comparator.comparing(SellerStudieRes::getDepthStudieByWeek).reversed();
+            case 2:
+                return Comparator.comparing(SellerStudieRes::getDepthStudieByMonth).reversed();
+            case 3:
+                return Comparator.comparing(SellerStudieRes::getFirstStudieByWeek).reversed();
+            case 4:
+                return Comparator.comparing(SellerStudieRes::getFirstStudieByMonth).reversed();
+            case 5:
+                return Comparator.comparing(SellerStudieRes::getQsjgCoveredByTheMonth).reversed();
+            case 6:
+                return Comparator.comparing(SellerStudieRes::getQsjgCoveredByLastMonth).reversed();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * 获取市场情绪因子,卖方研报信息详情
+     *
+     * @return
+     */
+    @Override
+    public RespRes getSellerStudieDataDetails(SellerStudieDetailsReq sellerStudieDetailsReq) {
+        log.info("ThsScoreServiceImpl | getSellerStudieDataDetails | sellerStudieDetailsReq = {}", sellerStudieDetailsReq);
+        List<ThsMemoirRes> thsMemoirResDetailsList = thsMemoirMapper.getThsMemoirResultDetails(sellerStudieDetailsReq.getTime(),
+                sellerStudieDetailsReq.isDepthReport(), sellerStudieDetailsReq.isFirstRecommend(), sellerStudieDetailsReq.getStockCode());
+        if (thsMemoirResDetailsList == null) {
+            return RespRes.success("获取成功", new ArrayList<>());
+        }
+        return RespRes.success("获取成功", thsMemoirResDetailsList);
+    }
+
+    /**
+     * 更新申万所属行业字典
+     *
+     * @return
+     */
+    @Override
+    public RespRes updateDictSwData() {
+        log.info("ThsScoreServiceImpl | updateDictSwData | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load(thsLoadConf);
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | updateDictSwData | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    //获取所有股票代码
+                    List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
+                    String[] stockCodes = thsScoreResList.stream()
+                            .map(ThsScoreRes::getStockCode)
+                            .toArray(String[]::new);
+                    String stockCodesStr = String.join(",", stockCodes);
+                    //申万所属行业
+                    String swIndustryResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_the_sw_industry_stock","103," + DateUtil.format(DateUtil.parse(DateUtil.today()), "yyyy-MM-dd"));
+                    JSONObject jsonObjectSwIndustry = JSON.parseObject(swIndustryResult);
+                    JSONArray tablesSwIndustry = jsonObjectSwIndustry.getJSONArray("tables");
+                    JSONArray swIndustryJSONArray = new JSONArray();
+                    if (tablesSwIndustry.size() == 0) {
+                        log.info("ThsScoreServiceImpl updateDictSwData result null");
+                        JDIBridge.THS_iFinDLogout();
+                        log.info("ThsScoreServiceImpl updateDictSwData THS_iFinDLogout");
+                        return RespRes.error("更新失败");
+                    }
+                    for (int i = 0; i < tablesSwIndustry.size(); i++) {
+                        JSONObject tableSwIndustry = tablesSwIndustry.getJSONObject(i);
+                        JSONArray swIndustryArray = tableSwIndustry.getJSONObject("table").getJSONArray("ths_the_sw_industry_stock");
+                        String swIndustryValue = swIndustryArray.getString(0);
+                        String[] swIndustry = swIndustryValue.split("--");
+                        JSONObject swIndustryObject = new JSONObject();
+                        swIndustryObject.put("firstIndustry", swIndustry[0]);
+                        swIndustryObject.put("secondIndustry", swIndustry[1]);
+                        swIndustryObject.put("thirdIndustry", swIndustry[2]);
+                        swIndustryJSONArray.add(swIndustryObject);
+                    }
+                    for (int i = 0; i < swIndustryJSONArray.size(); i++) {
+                        JSONObject swIndustryObject = swIndustryJSONArray.getJSONObject(i);
+                        String firstIndustry = swIndustryObject.getString("firstIndustry");
+                        String secondIndustry = swIndustryObject.getString("secondIndustry");
+                        String thirdIndustry = swIndustryObject.getString("thirdIndustry");
+                        log.info("ThsScoreServiceImpl | updateDictSwData | 证券代码 = {} | 一级行业 = {} | 二级行业 = {} | 三级行业 = {}", stockCodes[i], firstIndustry, secondIndustry, thirdIndustry);
+                        dictSwMapper.updateDictSw(stockCodes[i], firstIndustry, secondIndustry, thirdIndustry);
+                        if (dictSwMapper.updateDictSw(stockCodes[i], firstIndustry, secondIndustry, thirdIndustry) == 0) {
+                            return RespRes.success("更新失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | updateDictSwData | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl updateDictSwData THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | updateDictSwData | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl updateDictSwData Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("更新成功");
     }
 
     public static void main(String[] args) {
@@ -1521,8 +1659,10 @@ public class ThsScoreServiceImpl implements ThsScoreService {
 //                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_or_yoy_stock","20230331");
                 //净利增速最新一季度
 //                String result = JDIBridge.THS_BasicData("000001.SZ,000002.SZ,000006.SZ,000008.SZ","ths_np_yoy_stock","2023-03-31");
-                // 预测评级 机构预测明细
-                String result = JDIBridge.THS_DR("p00324","bgyear=2023;p0=最新;sdate=20230603;edate=20230603;blockFill=IFindKey@001005010@","jydm:Y,jydm_mc:Y,p00324_f001:Y,p00324_f002:Y,p00324_f036:Y,p00324_f037:Y,p00324_f045:Y,p00324_f003:Y,p00324_f004:Y,p00324_f005:Y,p00324_f038:Y,p00324_f039:Y,p00324_f006:Y,p00324_f007:Y,p00324_f008:Y,p00324_f009:Y,p00324_f010:Y,p00324_f011:Y,p00324_f012:Y,p00324_f013:Y,p00324_f014:Y,p00324_f046:Y,p00324_f047:Y,p00324_f048:Y,p00324_f015:Y,p00324_f016:Y,p00324_f017:Y,p00324_f018:Y,p00324_f019:Y,p00324_f020:Y,p00324_f021:Y,p00324_f022:Y,p00324_f023:Y,p00324_f024:Y,p00324_f025:Y,p00324_f026:Y,p00324_f027:Y,p00324_f028:Y,p00324_f029:Y,p00324_f030:Y,p00324_f033:Y");
+                //预测评级 机构预测明细
+//                String result = JDIBridge.THS_DR("p00324","bgyear=2023;p0=最新;sdate=20230603;edate=20230603;blockFill=IFindKey@001005010@","jydm:Y,jydm_mc:Y,p00324_f001:Y,p00324_f002:Y,p00324_f036:Y,p00324_f037:Y,p00324_f045:Y,p00324_f003:Y,p00324_f004:Y,p00324_f005:Y,p00324_f038:Y,p00324_f039:Y,p00324_f006:Y,p00324_f007:Y,p00324_f008:Y,p00324_f009:Y,p00324_f010:Y,p00324_f011:Y,p00324_f012:Y,p00324_f013:Y,p00324_f014:Y,p00324_f046:Y,p00324_f047:Y,p00324_f048:Y,p00324_f015:Y,p00324_f016:Y,p00324_f017:Y,p00324_f018:Y,p00324_f019:Y,p00324_f020:Y,p00324_f021:Y,p00324_f022:Y,p00324_f023:Y,p00324_f024:Y,p00324_f025:Y,p00324_f026:Y,p00324_f027:Y,p00324_f028:Y,p00324_f029:Y,p00324_f030:Y,p00324_f033:Y");
+                //所属申万行业
+                String result = JDIBridge.THS_BasicData("600000.SH,600015.SH,600018.SH","ths_the_sw_industry_stock","103,2023-06-17");
                 System.out.println("result == " + result );
                 JSONObject jsonObject = JSON.parseObject(result);
 //                System.out.println(jsonObject);
