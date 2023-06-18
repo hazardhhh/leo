@@ -17,4 +17,18 @@
         SELECT * FROM gxjg WHERE date = #{date}
     </select>
 
+    <select id="getGxjgResultDetails" resultMap="GxjgResultMap">
+        SELECT * FROM gxjg
+        WHERE
+        <choose>
+            <when test="time == 1">
+                YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE())
+            </when>
+            <when test="time == 2">
+                YEAR(date) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND MONTH(date) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+            </when>
+        </choose>
+        AND stock_code = #{stockCode}
+    </select>
+
 </mapper>

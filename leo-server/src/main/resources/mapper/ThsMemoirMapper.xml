@@ -88,7 +88,7 @@
             AND report_pages > 20
         </if>
         <if test="isFirstRecommend">
-            AND report_name LIKE '%首次覆盖%'
+            AND (report_name LIKE '%首次覆盖%' OR investment_rate_research_digest LIKE '%首次覆盖%')
         </if>
         AND stock_code = #{stockCode}
     </select>

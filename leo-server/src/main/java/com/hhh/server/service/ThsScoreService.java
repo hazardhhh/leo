@@ -94,7 +94,7 @@ public interface ThsScoreService {
      *
      * @return
      */
-    public RespRes insertThsMemoir();
+    public RespRes insertThsMemoir(boolean taskByWeek);
 
     /**
      * 获取市场情绪因子,卖方研报信息
@@ -109,6 +109,13 @@ public interface ThsScoreService {
      * @return
      */
     public RespRes getSellerStudieDataDetails(SellerStudieDetailsReq sellerStudieDetailsReq);
+
+    /**
+     * 获取市场情绪因子,卖方研报信息，国信金工被券商金股覆盖详情
+     *
+     * @return
+     */
+    public RespRes getSellerStudieDataDetailsByGxjg(SellerStudieDetailsByGxjgReq sellerStudieDetailsByGxjgReq);
 
     /**
      * 更新申万所属行业字典

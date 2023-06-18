@@ -32,7 +32,20 @@ public class ThsTask {
     public void insertThsMemoirTask(){
         if (taskEnable) {
             log.info("ThsTask insertThsMemoirTask");
-            thsScoreService.insertThsMemoir();
+            thsScoreService.insertThsMemoir(false);
+        }
+    }
+
+    /**
+     * 新增同花顺预测评级,机构预测明细表
+     * 每周三周日23点30执行 补全数据
+     *
+     */
+    @Scheduled(cron = "${ths.task.insertThsMemoirByWeek:0 30 23 ? * WED,SUN}")
+    public void insertThsMemoirTaskByWeek(){
+        if (taskEnable) {
+            log.info("ThsTask insertThsMemoirTaskByWeek");
+            thsScoreService.insertThsMemoir(true);
         }
     }
 

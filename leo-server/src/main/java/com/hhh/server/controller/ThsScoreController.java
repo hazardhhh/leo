@@ -87,7 +87,7 @@ public class ThsScoreController {
 //    @PostMapping("/thsScore/insertThsMemoir")
 //    @ApiOperation(value = "新增同花顺预测评级,机构预测明细表")
 //    public RespRes insertThsMemoir() {
-//        return thsScoreService.insertThsMemoir();
+//        return thsScoreService.insertThsMemoir(false);
 //    }
 
     @PostMapping("/thsScore/getSellerStudieData")
@@ -100,6 +100,12 @@ public class ThsScoreController {
     @ApiOperation(value = "获取卖方研报信息详情")
     public RespRes getSellerStudieDataDetails(@RequestBody SellerStudieDetailsReq sellerStudieDetailsReq) {
         return thsScoreService.getSellerStudieDataDetails(sellerStudieDetailsReq);
+    }
+
+    @PostMapping("/thsScore/getSellerStudieDataDetailsByGxjg")
+    @ApiOperation(value = "获取卖方研报信息,国信金工被券商金股覆盖详情")
+    public RespRes getSellerStudieDataDetailsByGxjg(@RequestBody SellerStudieDetailsByGxjgReq sellerStudieDetailsByGxjgReq) {
+        return thsScoreService.getSellerStudieDataDetailsByGxjg(sellerStudieDetailsByGxjgReq);
     }
 
     @PostMapping("/thsScore/updateDictSwData")

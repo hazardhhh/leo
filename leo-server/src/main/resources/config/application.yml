@@ -60,3 +60,4 @@ ths:
   task:
     enalbe: false
     insertThsMemoir: 0 58 11,18,23 * * ?
+    insertThsMemoirByWeek: 0 30 23 ? * WED,SUN

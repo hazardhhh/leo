@@ -1176,7 +1176,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      * @return
      */
     @Override
-    public RespRes insertThsMemoir() {
+    public RespRes insertThsMemoir(boolean taskByWeek) {
         log.info("ThsScoreServiceImpl | insertThsMemoir | SystemProperty = {}", System.getProperty("java.library.path"));
         System.load(thsLoadConf);
         int loginResultRet = -1;
@@ -1189,10 +1189,20 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                     // 获取昨天的日期
                     String yesterdayStr = DateUtil.format(DateUtil.yesterday(), "yyyyMMdd");
                     LocalDate yesterday = LocalDate.parse(yesterdayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                    LocalDate startDate = LocalDate.of(2023, 6, 10);
-//                    LocalDate endDate = LocalDate.of(2023, 6, 10);
+                    // 获取今天日期
+                    String todayStr = DateUtil.format(DateUtil.date(), "yyyyMMdd");
+                    LocalDate today = LocalDate.parse(todayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    // 获取一周前日期
+                    String weekAgoStr = DateUtil.format(DateUtil.offsetDay(DateUtil.date(), -7), "yyyyMMdd");
+                    LocalDate weekAgo = LocalDate.parse(weekAgoStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+//                    LocalDate startDate = LocalDate.of(2023, 1, 1);
+//                    LocalDate endDate = LocalDate.of(2023, 6, 18);
                     LocalDate startDate = yesterday;
                     LocalDate endDate = yesterday;
+                    if (taskByWeek) {
+                        startDate = weekAgo;
+                        endDate = today;
+                    }
                     // 从开始日期开始遍历
                     LocalDate currentDate = startDate;
                     // 遍历到结束日期的下一天
@@ -1299,23 +1309,32 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                                 thsMemoirRes.setDate(p00324_f033Array.getString(j));
                                 memoirList.add(thsMemoirRes);
                             }
-                        }//DateUtil.today()
-                        List<ThsMemoirRes> thsMemoirResultByDateList = thsMemoirMapper.getThsMemoirResultByDate("2023/06/10");
+                        }
+                        List<ThsMemoirRes> thsMemoirResultByDateList = thsMemoirMapper.getThsMemoirResultByDate(DateUtil.format(DateUtil.parse(date, "yyyyMMdd"), "yyyy/MM/dd"));
                         if (memoirList.size() > 0) {
                             Set<String> existingStockCodes = new HashSet<>();
+                            Map<String, List<String>> existingOrganizationMap = new HashMap<>();
                             for (ThsMemoirRes memoir : thsMemoirResultByDateList) {
                                 existingStockCodes.add(memoir.getStockCode());
+                                existingOrganizationMap.computeIfAbsent(memoir.getStockCode(), k -> new ArrayList<>())
+                                        .add(memoir.getResearchOrganization());
                             }
                             for (ThsMemoirRes memoir : memoirList) {
-                                if (!existingStockCodes.contains(memoir.getStockCode())) {
+                                String stockCode = memoir.getStockCode();
+                                String researchOrganization = memoir.getResearchOrganization();
+                                if (!existingStockCodes.contains(stockCode) || !existingOrganizationMap.get(stockCode).contains(researchOrganization)) {
                                     try {
                                         thsMemoirMapper.insertMemoir(memoir);
-                                        existingStockCodes.add(memoir.getStockCode());
+                                        existingStockCodes.add(stockCode);
+                                        existingOrganizationMap.computeIfAbsent(stockCode, k -> new ArrayList<>())
+                                                .add(researchOrganization);
                                     } catch (Exception e) {
                                         log.error("ThsScoreServiceImpl | insertThsMemoir | insertFail | Exception", e);
                                     }
                                 }
                             }
+                            existingStockCodes.clear();
+                            existingOrganizationMap.clear();
                         }
                         // 遍历到下一个日期
                         currentDate = currentDate.plusDays(1);
@@ -1381,14 +1400,14 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         }
         for (ThsMemoirRes thsMemoirRes : memoirResListByWeek) {
             // 判断是否首次推荐
-            if (thsMemoirRes.getReportName().contains("首次覆盖")) {
+            if (thsMemoirRes.getReportName().contains("首次覆盖") || thsMemoirRes.getInvestmentRateResearchDigest().contains("首次覆盖")) {
                 String stockCode = thsMemoirRes.getStockCode();
                 firstStudieByWeekMap.merge(stockCode, 1, Integer::sum);
             }
         }
         for (ThsMemoirRes thsMemoirRes : memoirResListByMonth) {
             // 判断是否首次推荐
-            if (thsMemoirRes.getReportName().contains("首次覆盖")) {
+            if (thsMemoirRes.getReportName().contains("首次覆盖") || thsMemoirRes.getInvestmentRateResearchDigest().contains("首次覆盖")) {
                 String stockCode = thsMemoirRes.getStockCode();
                 firstStudieStockNameMap.put(stockCode, thsMemoirRes.getStockName());
                 firstStudieByMonthMap.merge(stockCode, 1, Integer::sum);
@@ -1546,6 +1565,21 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             return RespRes.success("获取成功", new ArrayList<>());
         }
         return RespRes.success("获取成功", thsMemoirResDetailsList);
+    }
+
+    /**
+     * 获取市场情绪因子,卖方研报信息，国信金工被券商金股覆盖详情
+     *
+     * @return
+     */
+    @Override
+    public RespRes getSellerStudieDataDetailsByGxjg(SellerStudieDetailsByGxjgReq sellerStudieDetailsByGxjgReq) {
+        log.info("ThsScoreServiceImpl | getSellerStudieDataDetailsByGxjg | sellerStudieDetailsByGxjgReq = {}", sellerStudieDetailsByGxjgReq);
+        List<GxjgRes> gxjgResDetailsList = gxjgMapper.getGxjgResultDetails(sellerStudieDetailsByGxjgReq.getTime(), sellerStudieDetailsByGxjgReq.getStockCode());
+        if (gxjgResDetailsList == null) {
+            return RespRes.success("获取成功", new ArrayList<>());
+        }
+        return RespRes.success("获取成功", gxjgResDetailsList);
     }
 
     /**

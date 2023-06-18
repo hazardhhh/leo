@@ -18,4 +18,13 @@ public interface GxjgMapper {
      */
     public List<GxjgRes> getGxjgResult(String date);
 
+    /**
+     * 获取所有结果,当月和上个月,详情信息
+     *
+     * @param time 1 当月 2 上个月
+     * @param stockCode 证券代码
+     * @return
+     */
+    public List<GxjgRes> getGxjgResultDetails(int time, String stockCode);
+
 }
