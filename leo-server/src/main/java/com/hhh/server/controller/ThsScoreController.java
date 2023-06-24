@@ -114,4 +114,16 @@ public class ThsScoreController {
         return thsScoreService.updateDictSwData();
     }
 
+//    @PostMapping("/thsScore/insertThsBehavior")
+//    @ApiOperation(value = "新增同花顺用户行为统计表")
+//    public RespRes insertThsBehavior() {
+//        return thsScoreService.insertThsBehavior();
+//    }
+
+    @PostMapping("/thsScore/getThsBehaviorData")
+    @ApiOperation(value = "获取用户行为统计信息")
+    public BasicPageRes<RespRes> getThsBehaviorData(@RequestBody ThsBehaviorReq thsBehaviorReq, HttpServletResponse response) {
+        return thsScoreService.getThsBehaviorData(thsBehaviorReq, response);
+    }
+
 }

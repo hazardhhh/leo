@@ -49,4 +49,17 @@ public class ThsTask {
         }
     }
 
+    /**
+     * 同花顺公司资料,用户行为统计表
+     * 每天晚上 11,18,23点58分开始插入
+     *
+     */
+    @Scheduled(cron = "${ths.task.insertThsBehavior:0 50 23 * * ?}")
+    public void insertThsBehavior(){
+        if (taskEnable) {
+            log.info("ThsTask insertThsBehavior");
+            thsScoreService.insertThsBehavior();
+        }
+    }
+
 }

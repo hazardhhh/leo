@@ -124,4 +124,18 @@ public interface ThsScoreService {
      */
     public RespRes updateDictSwData();
 
+    /**
+     * 新增同花顺用户行为统计表
+     *
+     * @return
+     */
+    public RespRes insertThsBehavior();
+
+    /**
+     * 获取用户行为统计信息
+     *
+     * @return
+     */
+    public BasicPageRes<RespRes> getThsBehaviorData(ThsBehaviorReq thsBehaviorReq, HttpServletResponse response);
+
 }

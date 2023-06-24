@@ -5,10 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.hhh.server.logger.LeoLog;
-import com.hhh.server.mapper.DictSwMapper;
-import com.hhh.server.mapper.GxjgMapper;
-import com.hhh.server.mapper.ThsMemoirMapper;
-import com.hhh.server.mapper.ThsScoreMapper;
+import com.hhh.server.mapper.*;
 import com.hhh.server.pojo.*;
 import com.hhh.server.service.ThsScoreService;
 import com.hhh.server.utils.ThsScoreFunc;
@@ -54,6 +51,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
 
     @Autowired
     private DictSwMapper dictSwMapper;
+
+    @Autowired
+    private ThsBehaviorMapper thsBehaviorMapper;
 
     /**
      * 同花顺用户名
@@ -1656,6 +1656,174 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         return RespRes.success("更新成功");
     }
 
+    /**
+     * 新增同花顺用户行为统计表
+     *
+     * @return
+     */
+    @Override
+    public RespRes insertThsBehavior() {
+        log.info("ThsScoreServiceImpl | insertThsBehavior | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load(thsLoadConf);
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | insertThsBehavior | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    // 获取今天日期
+                    String todayStr = DateUtil.format(DateUtil.date(), "yyyyMMdd");
+                    LocalDate today = LocalDate.parse(todayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+//                    LocalDate startDate = LocalDate.of(2023, 1, 1);
+//                    LocalDate endDate = LocalDate.of(2023, 6, 24);
+                    LocalDate startDate = today;
+                    LocalDate endDate = today;
+                    // 从开始日期开始遍历
+                    LocalDate currentDate = startDate;
+                    String[] type = {"点击量前十", "自选股留存前十", "自选股增加前十", "自选股剔除前十"};
+                    // 遍历到结束日期的下一天
+                    while (currentDate.isBefore(endDate.plusDays(1))) {
+                        String date = currentDate.toString().replace("-", "");
+                        log.info("ThsScoreServiceImpl | insertThsBehavior | selectDate = {}", date);
+                        for (int k = 0; k < type.length; k++) {
+                            log.info("ThsScoreServiceImpl | insertThsBehavior | type = {}", type[k]);
+                            //预测评级 机构预测明细
+                            String result = JDIBridge.THS_DR("p02855","sdate=" + date + ";bbmc=" + type[k] + ";blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f005:Y,p02855_f011:Y,p02855_f007:Y,p02855_f008:Y,p02855_f009:Y,p02855_f010:Y,p02855_f006:Y");
+                            JSONObject jsonObject = JSON.parseObject(result);
+                            JSONArray tablesArray = jsonObject.getJSONArray("tables");
+                            if (tablesArray.size() == 0) {
+//                                log.info("ThsScoreServiceImpl insertThsBehavior result null");
+//                                JDIBridge.THS_iFinDLogout();
+//                                log.info("ThsScoreServiceImpl insertThsBehavior THS_iFinDLogout");
+//                                return RespRes.error("获取失败");
+                            }
+                            List<ThsBehaviorRes> behaviorList = new ArrayList<>();
+                            // 遍历 tables 数组，将数据解析为 Behavior 对象并添加到 behaviorList 中
+                            for (int i = 0; i < tablesArray.size(); i++) {
+                                JSONObject tableData = tablesArray.getJSONObject(i).getJSONObject("table");
+                                JSONArray p02855_f001Array = tableData.getJSONArray("p02855_f001");
+                                JSONArray p02855_f002Array = tableData.getJSONArray("p02855_f002");
+                                JSONArray p02855_f003Array = tableData.getJSONArray("p02855_f003");
+                                JSONArray p02855_f004Array = tableData.getJSONArray("p02855_f004");
+                                JSONArray p02855_f005Array = tableData.getJSONArray("p02855_f005");
+                                JSONArray p02855_f011Array = tableData.getJSONArray("p02855_f011");
+                                JSONArray p02855_f007Array = tableData.getJSONArray("p02855_f007");
+                                JSONArray p02855_f008Array = tableData.getJSONArray("p02855_f008");
+                                JSONArray p02855_f009Array = tableData.getJSONArray("p02855_f009");
+                                JSONArray p02855_f010Array = tableData.getJSONArray("p02855_f010");
+                                for (int j = 0; j < p02855_f003Array.size(); j++) {
+                                    ThsBehaviorRes thsBehaviorRes = new ThsBehaviorRes();
+                                    thsBehaviorRes.setDate(p02855_f001Array.getString(j));
+                                    thsBehaviorRes.setRank(p02855_f002Array.getString(j));
+                                    thsBehaviorRes.setStockCode(p02855_f003Array.getString(j));
+                                    thsBehaviorRes.setStockName(p02855_f004Array.getString(j));
+                                    thsBehaviorRes.setChangePercent(p02855_f005Array.getString(j));
+                                    thsBehaviorRes.setDDENet(p02855_f011Array.getString(j));
+                                    thsBehaviorRes.setDDEBBD(p02855_f007Array.getString(j));
+                                    thsBehaviorRes.setChangePercentByWeek(p02855_f008Array.getString(j));
+                                    thsBehaviorRes.setIndustry(p02855_f009Array.getString(j));
+                                    thsBehaviorRes.setIndustryChangePercent(p02855_f010Array.getString(j));
+                                    thsBehaviorRes.setType(String.valueOf(k + 1));
+                                    behaviorList.add(thsBehaviorRes);
+                                }
+                            }
+                            if (behaviorList.size() > 0) {
+                                for (ThsBehaviorRes behavior : behaviorList) {
+                                    try {
+                                        thsBehaviorMapper.insertBehavior(behavior);
+                                    } catch (Exception e) {
+                                        log.error("ThsScoreServiceImpl | insertThsBehavior | insertFail | Exception", e);
+                                    }
+                                }
+                            }
+                        }
+                        // 遍历到下一个日期
+                        currentDate = currentDate.plusDays(1);
+                        // 获取批量结果失败继续
+//                        continue;
+                    }
+                    log.info("ThsScoreServiceImpl insertThsBehavior insertEnd");
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | insertThsBehavior | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl insertThsBehavior THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | insertThsBehavior | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl insertThsBehavior Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("插入成功");
+    }
+
+    /**
+     * 获取用户行为统计信息
+     *
+     * @return
+     */
+    @Override
+    public BasicPageRes<RespRes> getThsBehaviorData(ThsBehaviorReq thsBehaviorReq, HttpServletResponse response) {
+        List<ThsBehaviorRes> thsBehaviorResList = thsBehaviorMapper.getThsBehaviorResultByDateAndType(thsBehaviorReq.getDate(), thsBehaviorReq.getSelectType());
+        log.info("ThsScoreServiceImpl | getThsBehaviorData | thsBehaviorResList = {}", thsBehaviorResList);
+        List<ThsBehaviorRes> thsBehaviorResResult;
+        if (thsBehaviorReq.getType() == 1) {
+            thsBehaviorResResult = new ArrayList<>(thsBehaviorResList);
+            // 导出excel
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.addHeaderAlias("date","日期");
+            writer.addHeaderAlias("rank","排名");
+            writer.addHeaderAlias("stockCode","证券代码");
+            writer.addHeaderAlias("stockName","证券名称");
+            writer.addHeaderAlias("changePercent","涨跌幅(%)");
+            writer.addHeaderAlias("DDENet","DDE大单净额(万元)");
+            writer.addHeaderAlias("DDEBBD","DDE大单净量(%)");
+            writer.addHeaderAlias("changePercentByWeek","最近一周涨跌幅(%)");
+            writer.addHeaderAlias("industry","所属行业");
+            writer.addHeaderAlias("industryChangePercent","所属行业涨跌幅(%)");
+            writer.write(thsBehaviorResResult, true);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename=result.xls");
+            ServletOutputStream out = null;
+            try {
+                out = response.getOutputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            writer.flush(out, true);
+            writer.close();
+            IoUtil.close(out);
+        }
+        BasicPageRes<RespRes> res = new BasicPageRes<>();
+        if (thsBehaviorResList.size() == 0) {
+            res.setPage(null);
+            res.setCode(500);
+            res.setMessage("获取失败");
+            res.setResult(new ArrayList<>());
+            return res;
+        }
+        LeoPage leoPage = new LeoPage(thsBehaviorReq.getPageNo(), thsBehaviorReq.getPageSize());
+        int totalCount = thsBehaviorResList.size();
+        int totalPageSum = (int) Math.ceil((double) totalCount / thsBehaviorReq.getPageSize());
+        thsBehaviorResResult = thsBehaviorResList.stream()
+                .skip((long) (thsBehaviorReq.getPageNo() - 1) * thsBehaviorReq.getPageSize())
+                .limit(thsBehaviorReq.getPageSize())
+                .collect(Collectors.toList());
+        leoPage.setTotalCount((long) totalCount);
+        leoPage.setTotalPageNum(totalPageSum);
+        res.setPage(leoPage);
+        res.setCode(200);
+        res.setMessage("获取成功");
+        res.setResult(thsBehaviorResResult);
+        return res;
+    }
+
     public static void main(String[] args) {
         System.out.println(System.getProperty("java.library.path"));
         System.load("F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll");
@@ -1696,7 +1864,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 //预测评级 机构预测明细
 //                String result = JDIBridge.THS_DR("p00324","bgyear=2023;p0=最新;sdate=20230603;edate=20230603;blockFill=IFindKey@001005010@","jydm:Y,jydm_mc:Y,p00324_f001:Y,p00324_f002:Y,p00324_f036:Y,p00324_f037:Y,p00324_f045:Y,p00324_f003:Y,p00324_f004:Y,p00324_f005:Y,p00324_f038:Y,p00324_f039:Y,p00324_f006:Y,p00324_f007:Y,p00324_f008:Y,p00324_f009:Y,p00324_f010:Y,p00324_f011:Y,p00324_f012:Y,p00324_f013:Y,p00324_f014:Y,p00324_f046:Y,p00324_f047:Y,p00324_f048:Y,p00324_f015:Y,p00324_f016:Y,p00324_f017:Y,p00324_f018:Y,p00324_f019:Y,p00324_f020:Y,p00324_f021:Y,p00324_f022:Y,p00324_f023:Y,p00324_f024:Y,p00324_f025:Y,p00324_f026:Y,p00324_f027:Y,p00324_f028:Y,p00324_f029:Y,p00324_f030:Y,p00324_f033:Y");
                 //所属申万行业
-                String result = JDIBridge.THS_BasicData("600000.SH,600015.SH,600018.SH","ths_the_sw_industry_stock","103,2023-06-17");
+//                String result = JDIBridge.THS_BasicData("600000.SH,600015.SH,600018.SH","ths_the_sw_industry_stock","103,2023-06-17");
+                // 用户行为统计
+                String result = JDIBridge.THS_DR("p02855","sdate=20230620;bbmc=点击量前十;blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f005:Y,p02855_f011:Y,p02855_f007:Y,p02855_f008:Y,p02855_f009:Y,p02855_f010:Y,p02855_f006:Y");
                 System.out.println("result == " + result );
                 JSONObject jsonObject = JSON.parseObject(result);
 //                System.out.println(jsonObject);
