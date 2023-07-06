@@ -62,3 +62,4 @@ ths:
     insertThsMemoir: 0 58 11,18,23 * * ?
     insertThsMemoirByWeek: 0 30 23 ? * WED,SUN
     insertThsBehavior: 0 50 23 * * ?
+    insertThsHot: 0 55 23 * * ?

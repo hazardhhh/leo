@@ -55,6 +55,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     @Autowired
     private ThsBehaviorMapper thsBehaviorMapper;
 
+    @Autowired
+    private ThsHotMapper thsHotMapper;
+
     /**
      * 同花顺用户名
      */
@@ -789,6 +792,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      */
     @Override
     public BasicPageRes<RespRes> rankPCTScore(RankPCTScoreReq rankPCTScoreReq, HttpServletResponse response) {
+        log.info("ThsScoreServiceImpl | rankPCTScore | rankPCTScoreReq = {}", rankPCTScoreReq);
         List<ThsScoreRes> thsScoreResList = thsScoreMapper.getThsScoreResult();
         //使用Collectors.groupingBy()方法将thsScoreResList按照swFirst字段进行分组
         Map<?, List<ThsScoreRes>> groupMap = null;
@@ -1090,6 +1094,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             writer.addHeaderAlias("revenueScore","营收增速最新季度Score");
             writer.addHeaderAlias("netProfitPCT","净利增速最新季度PCT");
             writer.addHeaderAlias("netProfitScore","净利增速最新季度Score");
+            // 只导出设置别名的字段
+            writer.setOnlyAlias(true);
             writer.write(thsScoreResult, true);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition","attachment;filename=result.xls");
@@ -1177,6 +1183,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      */
     @Override
     public RespRes insertThsMemoir(boolean taskByWeek) {
+        log.info("ThsScoreServiceImpl | insertThsMemoir | taskByWeek = {}", taskByWeek);
         log.info("ThsScoreServiceImpl | insertThsMemoir | SystemProperty = {}", System.getProperty("java.library.path"));
         System.load(thsLoadConf);
         int loginResultRet = -1;
@@ -1366,6 +1373,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      */
     @Override
     public BasicPageRes<RespRes> getSellerStudieData(SellerStudieReq sellerStudieReq, HttpServletResponse response) {
+        log.info("ThsScoreServiceImpl | getSellerStudieData | sellerStudieReq = {}", sellerStudieReq);
         List<ThsMemoirRes> memoirResListByWeek = thsMemoirMapper.getThsMemoirResultByWeek();
         List<ThsMemoirRes> memoirResListByMonth = thsMemoirMapper.getThsMemoirResultByMonth();
         List<DictSwRes> swIndustry = dictSwMapper.getSwIndustry();
@@ -1477,6 +1485,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             writer.addHeaderAlias("firstStudieByMonth","首次推荐过去一个月");
             writer.addHeaderAlias("qsjgCoveredByTheMonth","被券商金股覆盖的数量当月");
             writer.addHeaderAlias("qsjgCoveredByLastMonth","被券商金股覆盖的数量上个月");
+            // 只导出设置别名的字段
+            writer.setOnlyAlias(true);
             writer.write(sellerStudieResResult, true);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition","attachment;filename=result.xls");
@@ -1672,13 +1682,13 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             log.info("ThsScoreServiceImpl | insertThsBehavior | loginResultRet = {}", loginResultRet);
             if (loginResultRet == 0) {
                 try {
-                    // 获取今天日期
-                    String todayStr = DateUtil.format(DateUtil.date(), "yyyyMMdd");
-                    LocalDate today = LocalDate.parse(todayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                    LocalDate startDate = LocalDate.of(2023, 1, 1);
-//                    LocalDate endDate = LocalDate.of(2023, 6, 24);
-                    LocalDate startDate = today;
-                    LocalDate endDate = today;
+                    // 获取昨天的日期
+                    String yesterdayStr = DateUtil.format(DateUtil.yesterday(), "yyyyMMdd");
+                    LocalDate yesterday = LocalDate.parse(yesterdayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+//                    LocalDate startDate = LocalDate.of(2023, 6, 30);
+//                    LocalDate endDate = LocalDate.of(2023, 6, 30);
+                    LocalDate startDate = yesterday;
+                    LocalDate endDate = yesterday;
                     // 从开始日期开始遍历
                     LocalDate currentDate = startDate;
                     String[] type = {"点击量前十", "自选股留存前十", "自选股增加前十", "自选股剔除前十"};
@@ -1689,14 +1699,14 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                         for (int k = 0; k < type.length; k++) {
                             log.info("ThsScoreServiceImpl | insertThsBehavior | type = {}", type[k]);
                             //预测评级 机构预测明细
-                            String result = JDIBridge.THS_DR("p02855","sdate=" + date + ";bbmc=" + type[k] + ";blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f005:Y,p02855_f011:Y,p02855_f007:Y,p02855_f008:Y,p02855_f009:Y,p02855_f010:Y,p02855_f006:Y");
+                            String result = JDIBridge.THS_DR("p02855","sdate=" + date + ";bbmc=" + type[k] + ";blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f011:Y,p02855_f007:Y");
                             JSONObject jsonObject = JSON.parseObject(result);
                             JSONArray tablesArray = jsonObject.getJSONArray("tables");
                             if (tablesArray.size() == 0) {
-//                                log.info("ThsScoreServiceImpl insertThsBehavior result null");
-//                                JDIBridge.THS_iFinDLogout();
-//                                log.info("ThsScoreServiceImpl insertThsBehavior THS_iFinDLogout");
-//                                return RespRes.error("获取失败");
+                                log.info("ThsScoreServiceImpl insertThsBehavior result null");
+                                JDIBridge.THS_iFinDLogout();
+                                log.info("ThsScoreServiceImpl insertThsBehavior THS_iFinDLogout");
+                                return RespRes.error("获取失败");
                             }
                             List<ThsBehaviorRes> behaviorList = new ArrayList<>();
                             // 遍历 tables 数组，将数据解析为 Behavior 对象并添加到 behaviorList 中
@@ -1706,24 +1716,16 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                                 JSONArray p02855_f002Array = tableData.getJSONArray("p02855_f002");
                                 JSONArray p02855_f003Array = tableData.getJSONArray("p02855_f003");
                                 JSONArray p02855_f004Array = tableData.getJSONArray("p02855_f004");
-                                JSONArray p02855_f005Array = tableData.getJSONArray("p02855_f005");
                                 JSONArray p02855_f011Array = tableData.getJSONArray("p02855_f011");
                                 JSONArray p02855_f007Array = tableData.getJSONArray("p02855_f007");
-                                JSONArray p02855_f008Array = tableData.getJSONArray("p02855_f008");
-                                JSONArray p02855_f009Array = tableData.getJSONArray("p02855_f009");
-                                JSONArray p02855_f010Array = tableData.getJSONArray("p02855_f010");
                                 for (int j = 0; j < p02855_f003Array.size(); j++) {
                                     ThsBehaviorRes thsBehaviorRes = new ThsBehaviorRes();
                                     thsBehaviorRes.setDate(p02855_f001Array.getString(j));
                                     thsBehaviorRes.setRank(p02855_f002Array.getString(j));
                                     thsBehaviorRes.setStockCode(p02855_f003Array.getString(j));
                                     thsBehaviorRes.setStockName(p02855_f004Array.getString(j));
-                                    thsBehaviorRes.setChangePercent(p02855_f005Array.getString(j));
                                     thsBehaviorRes.setDDENet(p02855_f011Array.getString(j));
                                     thsBehaviorRes.setDDEBBD(p02855_f007Array.getString(j));
-                                    thsBehaviorRes.setChangePercentByWeek(p02855_f008Array.getString(j));
-                                    thsBehaviorRes.setIndustry(p02855_f009Array.getString(j));
-                                    thsBehaviorRes.setIndustryChangePercent(p02855_f010Array.getString(j));
                                     thsBehaviorRes.setType(String.valueOf(k + 1));
                                     behaviorList.add(thsBehaviorRes);
                                 }
@@ -1731,7 +1733,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                             if (behaviorList.size() > 0) {
                                 for (ThsBehaviorRes behavior : behaviorList) {
                                     try {
-                                        thsBehaviorMapper.insertBehavior(behavior);
+                                        thsBehaviorMapper.insertThsBehavior(behavior);
                                     } catch (Exception e) {
                                         log.error("ThsScoreServiceImpl | insertThsBehavior | insertFail | Exception", e);
                                     }
@@ -1770,6 +1772,7 @@ public class ThsScoreServiceImpl implements ThsScoreService {
      */
     @Override
     public BasicPageRes<RespRes> getThsBehaviorData(ThsBehaviorReq thsBehaviorReq, HttpServletResponse response) {
+        log.info("ThsScoreServiceImpl | getThsBehaviorData | thsBehaviorReq = {}", thsBehaviorReq);
         List<ThsBehaviorRes> thsBehaviorResList = thsBehaviorMapper.getThsBehaviorResultByDateAndType(thsBehaviorReq.getDate(), thsBehaviorReq.getSelectType());
         log.info("ThsScoreServiceImpl | getThsBehaviorData | thsBehaviorResList = {}", thsBehaviorResList);
         List<ThsBehaviorRes> thsBehaviorResResult;
@@ -1781,12 +1784,10 @@ public class ThsScoreServiceImpl implements ThsScoreService {
             writer.addHeaderAlias("rank","排名");
             writer.addHeaderAlias("stockCode","证券代码");
             writer.addHeaderAlias("stockName","证券名称");
-            writer.addHeaderAlias("changePercent","涨跌幅(%)");
             writer.addHeaderAlias("DDENet","DDE大单净额(万元)");
             writer.addHeaderAlias("DDEBBD","DDE大单净量(%)");
-            writer.addHeaderAlias("changePercentByWeek","最近一周涨跌幅(%)");
-            writer.addHeaderAlias("industry","所属行业");
-            writer.addHeaderAlias("industryChangePercent","所属行业涨跌幅(%)");
+            // 只导出设置别名的字段
+            writer.setOnlyAlias(true);
             writer.write(thsBehaviorResResult, true);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition","attachment;filename=result.xls");
@@ -1821,6 +1822,302 @@ public class ThsScoreServiceImpl implements ThsScoreService {
         res.setCode(200);
         res.setMessage("获取成功");
         res.setResult(thsBehaviorResResult);
+        return res;
+    }
+
+    /**
+     * 新增同花顺个股人气表
+     *
+     * @return
+     */
+    @Override
+    public RespRes insertThsHot() {
+        log.info("ThsScoreServiceImpl | insertThsHot | SystemProperty = {}", System.getProperty("java.library.path"));
+        System.load(thsLoadConf);
+        int loginResultRet = -1;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            loginResultRet = JDIBridge.THS_iFinDLogin(thsUserName, thsPassWord);
+            log.info("ThsScoreServiceImpl | insertThsHot | loginResultRet = {}", loginResultRet);
+            if (loginResultRet == 0) {
+                try {
+                    // 获取昨天的日期
+                    String yesterdayStr = DateUtil.format(DateUtil.yesterday(), "yyyyMMdd");
+                    LocalDate yesterday = LocalDate.parse(yesterdayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+//                    LocalDate startDate = LocalDate.of(2023, 7, 4);
+//                    LocalDate endDate = LocalDate.of(2023, 7, 5);
+                    LocalDate startDate = yesterday;
+                    LocalDate endDate = yesterday;
+                    // 从开始日期开始遍历
+                    LocalDate currentDate = startDate;
+                    // 遍历到结束日期的下一天
+                    while (currentDate.isBefore(endDate.plusDays(1))) {
+                        String date = currentDate.toString().replace("-", "");
+                        log.info("ThsScoreServiceImpl | insertThsHot | selectDate = {}", date);
+                        //预测评级 机构预测明细
+                        String result = JDIBridge.THS_DR("p03792", "date=" + date + ";bk=全部;tjzq=近一天", "jydm:Y,jydm_mc:Y,p03792_f002:Y,p03792_f004:Y,p03792_f006:Y,p03792_f008:Y,p03792_f010:Y");
+                        JSONObject jsonObject = JSON.parseObject(result);
+                        JSONArray tablesArray = jsonObject.getJSONArray("tables");
+                        if (tablesArray.size() == 0) {
+                            log.info("ThsScoreServiceImpl insertThsHot result null");
+                            JDIBridge.THS_iFinDLogout();
+                            log.info("ThsScoreServiceImpl insertThsHot THS_iFinDLogout");
+                            return RespRes.error("获取失败");
+                        }
+                        List<ThsHotRes> hotList = new ArrayList<>();
+                        // 遍历 tables 数组，将数据解析为 hot 对象并添加到 hotList 中
+                        for (int i = 0; i < tablesArray.size(); i++) {
+                            JSONObject tableData = tablesArray.getJSONObject(i).getJSONObject("table");
+                            JSONArray jydmArray = tableData.getJSONArray("jydm");
+                            JSONArray jydm_mcArray = tableData.getJSONArray("jydm_mc");
+                            JSONArray p03792_f002Array = tableData.getJSONArray("p03792_f002");
+                            JSONArray p03792_f004Array = tableData.getJSONArray("p03792_f004");
+                            JSONArray p03792_f006Array = tableData.getJSONArray("p03792_f006");
+                            JSONArray p03792_f008Array = tableData.getJSONArray("p03792_f008");
+                            JSONArray p03792_f010Array = tableData.getJSONArray("p03792_f010");
+                            for (int j = 0; j < jydmArray.size(); j++) {
+                                ThsHotRes thsHotRes = new ThsHotRes();
+                                thsHotRes.setStockCode(jydmArray.getString(j));
+                                thsHotRes.setStockName(jydm_mcArray.getString(j));
+                                thsHotRes.setDate(currentDate.toString());
+                                thsHotRes.setHot(p03792_f002Array.getString(j));
+                                thsHotRes.setVisitHot(p03792_f004Array.getString(j));
+                                thsHotRes.setSearchHot(p03792_f006Array.getString(j));
+                                thsHotRes.setOptionHot(p03792_f008Array.getString(j));
+                                thsHotRes.setFocusTack(p03792_f010Array.getString(j));
+                                hotList.add(thsHotRes);
+                            }
+                        }
+                        List<ThsHotRes> thsHotResultByDateList = thsHotMapper.getThsHotResultByDate(currentDate.toString());
+                        if (hotList.size() > 0) {
+                            Set<String> existingStockCodes = new HashSet<>();
+                            for (ThsHotRes hot : thsHotResultByDateList) {
+                                existingStockCodes.add(hot.getStockCode());
+                            }
+                            List<ThsHotRes> insertList = new ArrayList<>();
+                            for (ThsHotRes hot : hotList) {
+                                String stockCode = hot.getStockCode();
+                                if (!existingStockCodes.contains(stockCode)) {
+                                    insertList.add(hot);
+                                    existingStockCodes.add(stockCode);
+                                }
+                            }
+                            try {
+                                if (!insertList.isEmpty()) {
+                                    thsHotMapper.insertBatchThsHot(insertList);
+                                }
+                            } catch (Exception e) {
+                                log.error("ThsScoreServiceImpl | insertThsMemoir | insertFail | Exception", e);
+                            }
+                            existingStockCodes.clear();
+                        }
+                    // 遍历到下一个日期
+                    currentDate = currentDate.plusDays(1);
+                    // 获取批量结果失败继续
+//                    continue;
+                    }
+                    log.info("ThsScoreServiceImpl insertThsHot insertEnd");
+                } catch (Exception e) {
+                    log.error("ThsScoreServiceImpl | insertThsHot | Exception", e);
+                }
+                JDIBridge.THS_iFinDLogout();
+                log.info("ThsScoreServiceImpl insertThsHot THS_iFinDLogout");
+                break;
+            } else {
+                log.info("ThsScoreServiceImpl | insertThsHot | LoginFailed | loginResultRet = {}", loginResultRet);
+                tryCount--;
+            }
+        }
+
+        if (tryCount == 0) {
+            log.info("ThsScoreServiceImpl insertThsHot Failed to login after 3 tries.");
+        }
+
+        return RespRes.success("插入成功");
+    }
+
+    /**
+     * 获取用户行为统计和个股人气信息排名
+     *
+     * @return
+     */
+    @Override
+    public BasicPageRes<RespRes> getThsBehaviorAndHotRankData(ThsBehaviorAndHotRankReq thsBehaviorAndHotRankReq, HttpServletResponse response) {
+        log.info("ThsScoreServiceImpl | getThsBehaviorAndHotRankData | thsBehaviorAndHotRankReq = {}", thsBehaviorAndHotRankReq);
+        List<ThsBehaviorRes> thsBehaviorResListByWeek = thsBehaviorMapper.getThsBehaviorResultByTypeOfWeek(thsBehaviorAndHotRankReq.getSelectType());
+        List<ThsBehaviorRes> thsBehaviorResListByMonth = thsBehaviorMapper.getThsBehaviorResultByTypeOfMonth(thsBehaviorAndHotRankReq.getSelectType());
+        List<ThsHotRes> thsHotAVGResListByWeek = thsHotMapper.getThsHotAVGResultByWeek();
+        List<ThsHotRes> thsHotAVGResListByMonth = thsHotMapper.getThsHotAVGResultByMonth();
+        Map<String, List<Integer>> stockRankMapByWeek = new HashMap<>();
+        Map<String, Integer> stockRankMapResultByWeek = new HashMap<>();
+        List<ThsBehaviorAndHotRankRes> thsBehaviorAndHotRankResList = new ArrayList<>();
+        if (thsBehaviorAndHotRankReq.getPeriodType() == 1) {
+            // 计算最近一周的用户行为统计排名
+            for (ThsBehaviorRes behaviorRes : thsBehaviorResListByWeek) {
+                String stockCode = behaviorRes.getStockCode();
+                int rank = Integer.parseInt(behaviorRes.getRank());
+                if (stockRankMapByWeek.containsKey(stockCode)) {
+                    stockRankMapByWeek.get(stockCode).add(rank);
+                } else {
+                    List<Integer> ranks = new ArrayList<>();
+                    ranks.add(rank);
+                    stockRankMapByWeek.put(stockCode, ranks);
+                }
+            }
+            for (Map.Entry<String, List<Integer>> entry : stockRankMapByWeek.entrySet()) {
+                String stockCode = entry.getKey();
+                List<Integer> ranks = entry.getValue();
+                // 如果排名总和小于7，则将缺失的排名补充为1000
+                while (ranks.size() < 7) {
+                    ranks.add(1000);
+                }
+                // 计算排名总和
+                int rankSum = ranks.stream().mapToInt(Integer::intValue).sum();
+                stockRankMapResultByWeek.put(stockCode, rankSum);
+            }
+            List<Map.Entry<String, Integer>> sortedStockRankMapResultByWeek = new ArrayList<>(stockRankMapResultByWeek.entrySet());
+            sortedStockRankMapResultByWeek.sort(Map.Entry.comparingByValue(Collections.reverseOrder()));
+            int rank = 1;
+            for (Map.Entry<String, Integer> entry : sortedStockRankMapResultByWeek) {
+                String stockCode = entry.getKey();
+                int rankSum = entry.getValue();
+                ThsBehaviorAndHotRankRes thsBehaviorAndHotRankRes = new ThsBehaviorAndHotRankRes();
+                thsBehaviorAndHotRankRes.setStockCode(stockCode);
+                thsBehaviorAndHotRankRes.setBehaviorRankByWeek(String.valueOf(rank));
+                // 在 thsBehaviorResListByWeek 中查找对应的 ThsBehaviorRes 对象
+                ThsBehaviorRes behaviorRes = thsBehaviorResListByWeek.stream()
+                        .filter(res -> res.getStockCode().equals(stockCode))
+                        .findFirst()
+                        .orElse(null);
+                if (behaviorRes != null) {
+                    thsBehaviorAndHotRankRes.setStockName(behaviorRes.getStockName());
+                }
+                ThsHotRes hotRes = thsHotAVGResListByWeek.stream()
+                        .filter(res -> res.getStockCode().equals(stockCode))
+                        .findFirst()
+                        .orElse(null);
+                if (hotRes != null) {
+                    thsBehaviorAndHotRankRes.setHot(hotRes.getHot());
+                    thsBehaviorAndHotRankRes.setVisitHot(hotRes.getVisitHot());
+                    thsBehaviorAndHotRankRes.setSearchHot(hotRes.getSearchHot());
+                    thsBehaviorAndHotRankRes.setOptionHot(hotRes.getOptionHot());
+                    thsBehaviorAndHotRankRes.setFocusTack(hotRes.getFocusTack());
+                }
+                thsBehaviorAndHotRankResList.add(thsBehaviorAndHotRankRes);
+                rank++;
+            }
+        } else if (thsBehaviorAndHotRankReq.getPeriodType() == 2) {
+            // 计算最近一月的用户行为统计排名
+            for (ThsBehaviorRes behaviorRes : thsBehaviorResListByMonth) {
+                String stockCode = behaviorRes.getStockCode();
+                int rank = Integer.parseInt(behaviorRes.getRank());
+                if (stockRankMapByWeek.containsKey(stockCode)) {
+                    stockRankMapByWeek.get(stockCode).add(rank);
+                } else {
+                    List<Integer> ranks = new ArrayList<>();
+                    ranks.add(rank);
+                    stockRankMapByWeek.put(stockCode, ranks);
+                }
+            }
+            for (Map.Entry<String, List<Integer>> entry : stockRankMapByWeek.entrySet()) {
+                String stockCode = entry.getKey();
+                List<Integer> ranks = entry.getValue();
+                // 如果排名总和小于30，则将缺失的排名补充为1000
+                while (ranks.size() < 30) {
+                    ranks.add(1000);
+                }
+                // 计算排名总和
+                int rankSum = ranks.stream().mapToInt(Integer::intValue).sum();
+                stockRankMapResultByWeek.put(stockCode, rankSum);
+            }
+            List<Map.Entry<String, Integer>> sortedStockRankMapResultByWeek = new ArrayList<>(stockRankMapResultByWeek.entrySet());
+            sortedStockRankMapResultByWeek.sort(Map.Entry.comparingByValue(Collections.reverseOrder()));
+            int rank = 1;
+            for (Map.Entry<String, Integer> entry : sortedStockRankMapResultByWeek) {
+                String stockCode = entry.getKey();
+                int rankSum = entry.getValue();
+                ThsBehaviorAndHotRankRes thsBehaviorAndHotRankRes = new ThsBehaviorAndHotRankRes();
+                thsBehaviorAndHotRankRes.setStockCode(stockCode);
+                thsBehaviorAndHotRankRes.setBehaviorRankByMonth(String.valueOf(rank));
+                // 在 thsBehaviorResListByWeek 中查找对应的 ThsBehaviorRes 对象
+                ThsBehaviorRes behaviorRes = thsBehaviorResListByMonth.stream()
+                        .filter(res -> res.getStockCode().equals(stockCode))
+                        .findFirst()
+                        .orElse(null);
+                if (behaviorRes != null) {
+                    thsBehaviorAndHotRankRes.setStockName(behaviorRes.getStockName());
+                }
+                ThsHotRes hotRes = thsHotAVGResListByMonth.stream()
+                        .filter(res -> res.getStockCode().equals(stockCode))
+                        .findFirst()
+                        .orElse(null);
+                if (hotRes != null) {
+                    thsBehaviorAndHotRankRes.setHot(hotRes.getHot());
+                    thsBehaviorAndHotRankRes.setVisitHot(hotRes.getVisitHot());
+                    thsBehaviorAndHotRankRes.setSearchHot(hotRes.getSearchHot());
+                    thsBehaviorAndHotRankRes.setOptionHot(hotRes.getOptionHot());
+                    thsBehaviorAndHotRankRes.setFocusTack(hotRes.getFocusTack());
+                }
+                thsBehaviorAndHotRankResList.add(thsBehaviorAndHotRankRes);
+                rank++;
+            }
+        } else {
+            log.info("ThsScoreServiceImpl | getThsBehaviorAndHotRankData | periodType error | periodType = {}", thsBehaviorAndHotRankReq.getPeriodType());
+        }
+        log.info("ThsScoreServiceImpl | getThsBehaviorAndHotRankData | thsBehaviorAndHotRankResList = {}", thsBehaviorAndHotRankResList);
+        List<ThsBehaviorAndHotRankRes> ThsBehaviorAndHotRankResResult;
+        if (thsBehaviorAndHotRankReq.getType() == 1) {
+            ThsBehaviorAndHotRankResResult = new ArrayList<>(thsBehaviorAndHotRankResList);
+            // 导出excel
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.addHeaderAlias("stockCode","证券代码");
+            writer.addHeaderAlias("stockName","证券名称");
+            if (thsBehaviorAndHotRankReq.getPeriodType() == 1) {
+                writer.addHeaderAlias("behaviorRankByWeek","用户行为统计排名最近一周");
+            } else {
+                writer.addHeaderAlias("behaviorRankByMonth","用户行为统计排名最近一月");
+            }
+            writer.addHeaderAlias("hot","总热度（万）");
+            writer.addHeaderAlias("visitHot","游览热度（万）");
+            writer.addHeaderAlias("searchHot","热搜热度（万）");
+            writer.addHeaderAlias("optionHot","自选热度（万）");
+            writer.addHeaderAlias("focusTack","关注粘性（%）");
+            // 只导出设置别名的字段
+            writer.setOnlyAlias(true);
+            writer.write(ThsBehaviorAndHotRankResResult, true);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename=result.xls");
+            ServletOutputStream out = null;
+            try {
+                out = response.getOutputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            writer.flush(out, true);
+            writer.close();
+            IoUtil.close(out);
+        }
+        BasicPageRes<RespRes> res = new BasicPageRes<>();
+        if (thsBehaviorAndHotRankResList.size() == 0) {
+            res.setPage(null);
+            res.setCode(500);
+            res.setMessage("获取失败");
+            res.setResult(new ArrayList<>());
+            return res;
+        }
+        LeoPage leoPage = new LeoPage(thsBehaviorAndHotRankReq.getPageNo(), thsBehaviorAndHotRankReq.getPageSize());
+        int totalCount = thsBehaviorAndHotRankResList.size();
+        int totalPageSum = (int) Math.ceil((double) totalCount / thsBehaviorAndHotRankReq.getPageSize());
+        ThsBehaviorAndHotRankResResult = thsBehaviorAndHotRankResList.stream()
+                .skip((long) (thsBehaviorAndHotRankReq.getPageNo() - 1) * thsBehaviorAndHotRankReq.getPageSize())
+                .limit(thsBehaviorAndHotRankReq.getPageSize())
+                .collect(Collectors.toList());
+        leoPage.setTotalCount((long) totalCount);
+        leoPage.setTotalPageNum(totalPageSum);
+        res.setPage(leoPage);
+        res.setCode(200);
+        res.setMessage("获取成功");
+        res.setResult(ThsBehaviorAndHotRankResResult);
         return res;
     }
 
@@ -1866,7 +2163,9 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                 //所属申万行业
 //                String result = JDIBridge.THS_BasicData("600000.SH,600015.SH,600018.SH","ths_the_sw_industry_stock","103,2023-06-17");
                 // 用户行为统计
-                String result = JDIBridge.THS_DR("p02855","sdate=20230620;bbmc=点击量前十;blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f005:Y,p02855_f011:Y,p02855_f007:Y,p02855_f008:Y,p02855_f009:Y,p02855_f010:Y,p02855_f006:Y");
+//                String result = JDIBridge.THS_DR("p02855","sdate=20230620;bbmc=点击量前十;blockFill=IFindKey@001005010@","p02855_f001:Y,p02855_f002:Y,p02855_f003:Y,p02855_f004:Y,p02855_f005:Y,p02855_f011:Y,p02855_f007:Y,p02855_f008:Y,p02855_f009:Y,p02855_f010:Y,p02855_f006:Y");
+                // 个股人气
+                String result = JDIBridge.THS_DR("p03792","date=20230629;bk=全部;tjzq=近一天","jydm:Y,jydm_mc:Y,p03792_f001:Y,p03792_f002:Y,p03792_f003:Y,p03792_f004:Y,p03792_f005:Y,p03792_f006:Y,p03792_f007:Y,p03792_f008:Y,p03792_f009:Y,p03792_f010:Y,p03792_f011:Y,p03792_f012:Y,p03792_f013:Y,p03792_f014:Y,p03792_f015:Y,p03792_f016:Y");
                 System.out.println("result == " + result );
                 JSONObject jsonObject = JSON.parseObject(result);
 //                System.out.println(jsonObject);

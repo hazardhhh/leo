@@ -138,4 +138,18 @@ public interface ThsScoreService {
      */
     public BasicPageRes<RespRes> getThsBehaviorData(ThsBehaviorReq thsBehaviorReq, HttpServletResponse response);
 
+    /**
+     * 新增同花顺个股人气表
+     *
+     * @return
+     */
+    public RespRes insertThsHot();
+
+    /**
+     * 获取用户行为统计和个股人气信息排名
+     *
+     * @return
+     */
+    public BasicPageRes<RespRes> getThsBehaviorAndHotRankData(ThsBehaviorAndHotRankReq thsBehaviorAndHotRankReq, HttpServletResponse response);
+
 }

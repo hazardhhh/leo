@@ -126,4 +126,16 @@ public class ThsScoreController {
         return thsScoreService.getThsBehaviorData(thsBehaviorReq, response);
     }
 
+//    @PostMapping("/thsScore/insertThsHot")
+//    @ApiOperation(value = "新增同花顺个股人气表")
+//    public RespRes insertThsHot() {
+//        return thsScoreService.insertThsHot();
+//    }
+
+    @PostMapping("/thsScore/getThsBehaviorAndHotRankData")
+    @ApiOperation(value = "获取用户行为统计和个股人气信息排名")
+    public BasicPageRes<RespRes> getThsBehaviorAndHotRankData(@RequestBody ThsBehaviorAndHotRankReq thsBehaviorAndHotRankReq, HttpServletResponse response) {
+        return thsScoreService.getThsBehaviorAndHotRankData(thsBehaviorAndHotRankReq, response);
+    }
+
 }

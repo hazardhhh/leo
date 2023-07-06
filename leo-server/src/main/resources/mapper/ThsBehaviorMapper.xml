@@ -8,12 +8,8 @@
         <result column="rank" property="rank"/>
         <result column="stock_code" property="stockCode"/>
         <result column="stock_name" property="stockName"/>
-        <result column="change_percent" property="changePercent"/>
         <result column="DDE_net" property="DDENet"/>
         <result column="DDE_BBD" property="DDEBBD"/>
-        <result column="change_percent_by_week" property="changePercentByWeek"/>
-        <result column="industry" property="industry"/>
-        <result column="industry_change_percent" property="industryChangePercent"/>
         <result column="type" property="type"/>
     </resultMap>
 
@@ -21,11 +17,17 @@
         SELECT * FROM ths_behavior WHERE `date` = #{date} AND type = #{type}
     </select>
 
-    <insert id="insertBehavior" parameterType="com.hhh.server.pojo.ThsBehaviorRes">
-        INSERT INTO ths_behavior (`date`, `rank`, stock_code, stock_name, change_percent, DDE_net, DDE_BBD,
-                    change_percent_by_week, industry, industry_change_percent, type)
-        VALUES (#{date}, #{rank}, #{stockCode}, #{stockName}, #{changePercent}, #{DDENet}, #{DDEBBD}, #{changePercentByWeek},
-                #{industry}, #{industryChangePercent}, #{type})
+    <select id="getThsBehaviorResultByTypeOfWeek" resultMap="ThsBehaviorResultMap">
+        SELECT * FROM ths_behavior WHERE `date` BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND CURDATE() AND type = #{type}
+    </select>
+
+    <select id="getThsBehaviorResultByTypeOfMonth" resultMap="ThsBehaviorResultMap">
+        SELECT * FROM ths_behavior WHERE `date` BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE() AND type = #{type}
+    </select>
+
+    <insert id="insertThsBehavior" parameterType="com.hhh.server.pojo.ThsBehaviorRes">
+        INSERT INTO ths_behavior (`date`, `rank`, stock_code, stock_name, DDE_net, DDE_BBD, type)
+        VALUES (#{date}, #{rank}, #{stockCode}, #{stockName}, #{DDENet}, #{DDEBBD}, #{type})
     </insert>
 
 </mapper>

@@ -29,23 +29,11 @@ public class ThsBehaviorRes {
     @ApiModelProperty(value = "证券名称")
     private String stockName;
 
-    @ApiModelProperty(value = "涨跌幅(%)")
-    private String changePercent;
-
     @ApiModelProperty(value = "DDE大单净额(万元)")
     private String DDENet;
 
     @ApiModelProperty(value = "DDE大单净量(%)")
     private String DDEBBD;
-
-    @ApiModelProperty(value = "最近一周涨跌幅(%)")
-    private String changePercentByWeek;
-
-    @ApiModelProperty(value = "所属行业")
-    private String industry;
-
-    @ApiModelProperty(value = "所属行业涨跌幅(%)")
-    private String industryChangePercent;
 
     @ApiModelProperty(value = "类型 1 个股点击量前100 2 自选股留存前100 3 自选股增加前100 4 自选股剔除前100")
     private String type;

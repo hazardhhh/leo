@@ -113,11 +113,11 @@ public class XlsxReader {
         }
     }
 
-    public static void main2(String[] args) {
-        String fileName = "F:\\国信金工\\【国信金工】6月券商金股统计_50家.xlsx";
-        String url = "jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT";
+    public static void main(String[] args) {
+        String fileName = "F:\\国信金工\\【国信金工】7月券商金股统计_48家.xlsx";
+        String url = "jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT";
         String user = "root";
-        String password = "111111";
+        String password = "51985993+H";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -205,7 +205,7 @@ public class XlsxReader {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         String fileName = "F:\\打分\\04.打分算法\\申万一级企业属性.xlsx";
         String url = "jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT";
         String user = "root";
