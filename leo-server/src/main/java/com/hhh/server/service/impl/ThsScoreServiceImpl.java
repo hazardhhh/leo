@@ -61,20 +61,20 @@ public class ThsScoreServiceImpl implements ThsScoreService {
     /**
      * 同花顺用户名
      */
-    @Value("${ths.username}")
+    @Value("${leo.username}")
     private String thsUserName;
 
     /**
      * 同花顺密码
      */
-    @Value("${ths.thsPassWord}")
+    @Value("${leo.thsPassWord}")
     private String thsPassWord;
 
     /**
      * 同花顺加载配置
      */
 //    private final String thsLoadConf = "F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll";
-    @Value("${ths.loadConf}")
+    @Value("${leo.loadConf}")
     private String thsLoadConf;
 
     /**

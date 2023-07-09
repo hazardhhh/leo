@@ -51,15 +51,3 @@ jwt:
   expiration: 604800
   # JWT 负载中拿到开头
   tokenHead: Bearer
-
-ths:
-  swaggerUrl: http:localhost:7896/doc.html
-  username: xlkjyy001
-  thsPassWord: 666888
-  loadConf: F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll
-  task:
-    enalbe: false
-    insertThsMemoir: 0 58 11,18,23 * * ?
-    insertThsMemoirByWeek: 0 30 23 ? * WED,SUN
-    insertThsBehavior: 0 50 23 * * ?
-    insertThsHot: 0 55 23 * * ?

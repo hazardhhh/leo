@@ -1,13 +1,22 @@
 package com.hhh.server.config;
 
+import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.hhh.server.logger.LeoLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @Description 加载外部配置文件
@@ -18,9 +27,12 @@ public class LeoEnvPostProcessor implements EnvironmentPostProcessor {
 
     private static final LeoLog log = LeoLog.getInstance();
 
+    private static final String PROPERTIES = "allproperties";
+
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         initLog4j2();
+        initProp(environment);
     }
 
     /**
@@ -47,6 +59,74 @@ public class LeoEnvPostProcessor implements EnvironmentPostProcessor {
         }
 
         log.info("log4j2 config path is {}", log4jPath);
+    }
+
+    private void initProp(ConfigurableEnvironment environment) {
+        log.info("====== init properties ======");
+        String basicConfigPath = LocalConfig.configPath;
+        log.info("====== init custom properties ======");
+        List<CustomConfig> propConfigs = new ArrayList<>();
+        List<CustomConfig> xmlConfigs = new ArrayList<>();
+        try {
+            // 应用层格式的Apollo配置类
+            String[] propertiesFiles = LocalConfig.CONFIG_FILES;
+            if(ArrayUtils.isNotEmpty(propertiesFiles)){
+                for (String fileName : propertiesFiles) {
+                    //加载本地配置文件
+                    if (StringUtils.endsWithIgnoreCase(fileName, ".xml")) {
+                        //加载xml配置文件,不加载到内存中，只加载到apollo中
+                        xmlConfigs.add(formatCustomConfig(fileName));
+                    } else {
+                        PropertiesUtil.loadPropertiesFileByPath(basicConfigPath + File.separatorChar + fileName);
+                        propConfigs.add(formatCustomConfig(fileName));
+                    }
+                }
+            }
+
+            // 刷新配置至springContext
+            refreshSpringContext(environment, PropertiesUtil.getPropertiesMap());
+        } catch (Exception e) {
+            log.error("init custom properties error.", e);
+            System.exit(0);
+        }
+
+        refreshSpringContext(environment, PropertiesUtil.getRemotePropertiesMap());
+        log.info("init properties finished.");
+    }
+
+    /**
+     * 转换为Apollo的Config对象
+     *
+     * @param fileName 配置文件名称
+     * @return 配置类
+     */
+    private CustomConfig formatCustomConfig(String fileName) {
+        CustomConfig customConfig = new CustomConfig();
+        String namespace = fileName.substring(0, fileName.lastIndexOf("."));
+        customConfig.setFilename(fileName);
+        customConfig.setNamespace(namespace);
+        return customConfig;
+    }
+
+    /**
+     * 刷新配置文件到spring上下文
+     *
+     * @param environment   环境信息
+     * @param propertiesMap 所有配置map
+     */
+    private void refreshSpringContext(ConfigurableEnvironment environment, Map<String, String> propertiesMap) {
+        if (CollectionUtils.isEmpty(propertiesMap)) {
+            return;
+        }
+        MutablePropertySources propertySources = environment.getPropertySources();
+        PropertiesPropertySource propertySource = (PropertiesPropertySource) propertySources.get(PROPERTIES);
+        if (propertySource == null) {
+            Properties properties = new Properties();
+            properties.putAll(propertiesMap);
+            propertySources.addFirst(new PropertiesPropertySource(PROPERTIES, properties));
+        } else {
+            propertySource.getSource().putAll(propertiesMap);
+        }
     }
 
 }

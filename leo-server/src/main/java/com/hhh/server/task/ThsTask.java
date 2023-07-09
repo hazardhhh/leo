@@ -17,7 +17,7 @@ public class ThsTask {
 
     private static final LeoLog log = LeoLog.getInstance();
 
-    @Value("${ths.task.enalbe:false}")
+    @Value("${leo.task.enalbe:false}")
     private boolean taskEnable;
 
     @Autowired
@@ -28,7 +28,7 @@ public class ThsTask {
      * 每天晚上 11,18,23点58分开始插入
      *
      */
-    @Scheduled(cron = "${ths.task.insertThsMemoir:0 58 11,18,23 * * ?}")
+    @Scheduled(cron = "${leo.task.insertThsMemoir:0 58 11,18,23 * * ?}")
     public void insertThsMemoirTask(){
         if (taskEnable) {
             log.info("ThsTask insertThsMemoirTask");
@@ -41,7 +41,7 @@ public class ThsTask {
      * 每周三周日23点30执行 补全数据
      *
      */
-    @Scheduled(cron = "${ths.task.insertThsMemoirByWeek:0 30 23 ? * WED,SUN}")
+    @Scheduled(cron = "${leo.task.insertThsMemoirByWeek:0 30 23 ? * WED,SUN}")
     public void insertThsMemoirTaskByWeek(){
         if (taskEnable) {
             log.info("ThsTask insertThsMemoirTaskByWeek");
@@ -54,7 +54,7 @@ public class ThsTask {
      * 每天晚上 23点50分开始插入
      *
      */
-    @Scheduled(cron = "${ths.task.insertThsBehavior:0 50 23 * * ?}")
+    @Scheduled(cron = "${leo.task.insertThsBehavior:0 50 23 * * ?}")
     public void insertThsBehavior(){
         if (taskEnable) {
             log.info("ThsTask insertThsBehavior");
@@ -67,7 +67,7 @@ public class ThsTask {
      * 每天晚上 23点55分开始插入
      *
      */
-    @Scheduled(cron = "${ths.task.insertThsHot:0 55 23 * * ?}")
+    @Scheduled(cron = "${leo.task.insertThsHot:0 55 23 * * ?}")
     public void insertThsHot(){
         if (taskEnable) {
             log.info("ThsTask insertThsHot");

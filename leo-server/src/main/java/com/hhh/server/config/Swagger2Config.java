@@ -25,7 +25,7 @@ import java.util.List;
 @EnableSwagger2
 public class Swagger2Config {
 
-    @Value("${ths.swaggerUrl}")
+    @Value("${leo.swaggerUrl}")
     private String swaggerUrl;
 
     @Bean
