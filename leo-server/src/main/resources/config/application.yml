@@ -6,11 +6,11 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
-#    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
+#    url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
+    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
     username: root
-    password: 111111
-#    password: 51985993+H
+#    password: 111111
+    password: 51985993+H
     hikari:
       # 连接池名
       pool-name: DateHikariCP
@@ -51,3 +51,15 @@ jwt:
   expiration: 604800
   # JWT 负载中拿到开头
   tokenHead: Bearer
+
+leo:
+  swaggerUrl: http:localhost:7896/doc.html
+  username: xlkjyy001
+  thsPassWord: 666888
+  loadConf: F://同花顺sdk//THSDataInterface_Windows//bin//x64//iFinDJava_x64.dll
+  task:
+    enable: false
+    insertThsMemoir: 0 58 11,18,23 * * ?
+    insertThsMemoirByWeek: 0 30 23 ? * WED,SUN
+    insertThsBehavior: 0 50 23 * * ?
+    insertThsHot: 0 55 23 * * ?

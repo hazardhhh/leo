@@ -1202,8 +1202,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                     // 获取一周前日期
                     String weekAgoStr = DateUtil.format(DateUtil.offsetDay(DateUtil.date(), -7), "yyyyMMdd");
                     LocalDate weekAgo = LocalDate.parse(weekAgoStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                    LocalDate startDate = LocalDate.of(2023, 1, 1);
-//                    LocalDate endDate = LocalDate.of(2023, 6, 18);
+//                    LocalDate startDate = LocalDate.of(2023, 7, 8);
+//                    LocalDate endDate = LocalDate.of(2023, 7, 12);
                     LocalDate startDate = yesterday;
                     LocalDate endDate = yesterday;
                     if (taskByWeek) {
@@ -1685,8 +1685,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                     // 获取昨天的日期
                     String yesterdayStr = DateUtil.format(DateUtil.yesterday(), "yyyyMMdd");
                     LocalDate yesterday = LocalDate.parse(yesterdayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                    LocalDate startDate = LocalDate.of(2023, 6, 30);
-//                    LocalDate endDate = LocalDate.of(2023, 6, 30);
+//                    LocalDate startDate = LocalDate.of(2023, 7, 10);
+//                    LocalDate endDate = LocalDate.of(2023, 7, 12);
                     LocalDate startDate = yesterday;
                     LocalDate endDate = yesterday;
                     // 从开始日期开始遍历
@@ -1844,8 +1844,8 @@ public class ThsScoreServiceImpl implements ThsScoreService {
                     // 获取昨天的日期
                     String yesterdayStr = DateUtil.format(DateUtil.yesterday(), "yyyyMMdd");
                     LocalDate yesterday = LocalDate.parse(yesterdayStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//                    LocalDate startDate = LocalDate.of(2023, 7, 4);
-//                    LocalDate endDate = LocalDate.of(2023, 7, 5);
+//                    LocalDate startDate = LocalDate.of(2023, 7, 8);
+//                    LocalDate endDate = LocalDate.of(2023, 7, 12);
                     LocalDate startDate = yesterday;
                     LocalDate endDate = yesterday;
                     // 从开始日期开始遍历

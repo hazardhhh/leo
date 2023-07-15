@@ -17,7 +17,7 @@ public class ThsTask {
 
     private static final LeoLog log = LeoLog.getInstance();
 
-    @Value("${leo.task.enalbe:false}")
+    @Value("${leo.task.enable:false}")
     private boolean taskEnable;
 
     @Autowired
