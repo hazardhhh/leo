@@ -71,7 +71,7 @@ public class AdminRes implements Serializable, UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         // 根据实际业务逻辑，动态添加权限到authorities集合中
-        if (this.username.equals("admin")) {
+        if ("admin".equals(this.username)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         } else {

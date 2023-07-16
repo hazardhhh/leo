@@ -65,6 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/swagger-resources/**",
                         "/v2/api-docs/**",
+                        "/test",
                         "/ws/**");
     }
 
@@ -120,10 +121,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return username -> {
             AdminRes adminRes = adminService.getAdminByUserName(username);
             if (null != adminRes) {
-//                admin.setRoles(adminService.getRoles(admin.getId()));
                 return adminRes;
             }
-            //      return null;
             throw new UsernameNotFoundException("用户名或密码不正确");
         };
     }
@@ -132,4 +131,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
         return new JwtAuthenticationTokenFilter();
     }
+
 }

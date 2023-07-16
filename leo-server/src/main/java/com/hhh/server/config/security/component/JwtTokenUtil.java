@@ -152,4 +152,5 @@ public class JwtTokenUtil {
         Date expireDate = getExpiredDateFromToken(token);
         return expireDate.before(new Date());
     }
+
 }

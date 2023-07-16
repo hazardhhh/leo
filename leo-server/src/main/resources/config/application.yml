@@ -3,14 +3,25 @@ server:
   port: 7896
 
 spring:
+  # 解决循环依赖
+  main:
+    allow-circular-references: true
+  # 解决高版本swagger兼容问题
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
-    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
+    url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
+#    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
     username: root
-#    password: 111111
-    password: 51985993+H
+    password: 111111
+#    password: 51985993+H
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://175.27.187.50:5432/cjdb
+#    username: cjopr
+#    password: SxMmm$A~fM9wFd6#
     hikari:
       # 连接池名
       pool-name: DateHikariCP

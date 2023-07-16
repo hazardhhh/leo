@@ -2,7 +2,6 @@ package com.hhh.server.controller;
 
 import com.hhh.server.pojo.AdminRes;
 import com.hhh.server.pojo.RespRes;
-//import com.hhh.server.utils.FastDFSUtils;
 import com.hhh.server.pojo.UpdatePwdReq;
 import com.hhh.server.service.IAdminService;
 import io.swagger.annotations.ApiOperation;
