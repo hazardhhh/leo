@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hhh.server.mapper.TestMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="TestMap" type="cn.hhh.server.entity.vo.ths.TestRes">
+        <id column="id" property="id"/>
+        <result column="author" property="author"/>
+    </resultMap>
+
+    <select id="getTestData" resultMap="TestMap">
+        select * from dict_author
+    </select>
+
+</mapper>

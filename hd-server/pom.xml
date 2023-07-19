@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.hhh</groupId>
+        <artifactId>leo</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hd-server</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>8</java.version>
+        <mysql.version>8.0.33</mysql.version>
+        <mybatis-plus.version>3.3.1.tmp</mybatis-plus.version>
+        <mybatisPlusExt.version>3.5.2-EXT144</mybatisPlusExt.version>
+        <swagger.version>3.0.0</swagger.version>
+        <knife4j.version>3.0.3</knife4j.version>
+        <jwt.version>4.2.1</jwt.version>
+        <jjwt.version>0.11.5</jjwt.version>
+        <captcha.version>0.0.9</captcha.version>
+        <easy-poi.version>4.1.3</easy-poi.version>
+        <easyexcel.version>3.1.1</easyexcel.version>
+        <fastjson.version>2.0.10</fastjson.version>
+        <hutool.version>5.8.7</hutool.version>
+        <vavr.version>0.10.2</vavr.version>
+        <output.path>../target/${project.parent.artifactId}</output.path>
+        <!-- 打包插件版本 -->
+        <spring.maven.plugs.version>2.3.0.RELEASE</spring.maven.plugs.version>
+        <maven.surefire.plugs.version>3.0.0-M5</maven.surefire.plugs.version>
+        <maven.clean.plugs.version>3.1.0</maven.clean.plugs.version>
+        <maven.dependency.plugs.version>3.1.2</maven.dependency.plugs.version>
+        <maven.resources.plugs.version>3.2.0</maven.resources.plugs.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!-- 基于log4J2的配置,需要排除logback的依赖 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!-- 基于log4J2的配置,需要排除logback的依赖 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- 使用log4j2 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- spring data redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <!-- commons-pool2 对象池依赖 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- mybatis-plus -->
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
+<!--            <version>${mybatis-plus.version}</version>-->
+<!--        </dependency>-->
+
+        <!-- mybatisPlusExt -->
+        <dependency>
+            <groupId>com.tangzc</groupId>
+            <artifactId>mybatis-plus-ext-boot-starter</artifactId>
+            <version>${mybatisPlusExt.version}</version>
+        </dependency>
+
+        <!-- Swagger  -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+        <!-- swagger-bootstrap-ui -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
+        </dependency>
+
+        <!-- JWT -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <!-- google kaptcha -->
+        <dependency>
+            <groupId>com.github.axet</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>${captcha.version}</version>
+        </dependency>
+
+        <!-- easy poi -->
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-spring-boot-starter</artifactId>
+            <version>${easy-poi.version}</version>
+        </dependency>
+
+        <!-- easy excel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyexcel.version}</version>
+        </dependency>
+
+        <!-- fastjson依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+
+        <!-- hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <!-- vavr -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
+        </dependency>
+
+        <!-- ths sdk -->
+        <dependency>
+            <groupId>com.hhh</groupId>
+            <artifactId>ths-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>hd-${project.parent.version}</finalName>
+        <resources>
+            <!-- 此处配置的resources属性用于打包到jar文件中 仅配置代码中可能有的资源文件
+                src/main/resourcse目录不打包到jar文件中，因此不建议配置
+             -->
+<!--            <resource>-->
+<!--                <directory>src/main/java</directory>-->
+<!--                <filtering>false</filtering>-->
+<!--                <excludes>-->
+<!--                    <exclude>**/*.java</exclude>-->
+<!--                    <exclude>**/.gitkeep</exclude>-->
+<!--                </excludes>-->
+<!--            </resource>-->
+            <!--    这个resource不写的话，本地编译运行会找不到application.yml，本地调试解开注释不要提交        -->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <filtering>false</filtering>-->
+<!--                <excludes>-->
+<!--                    <exclude>**/*.java</exclude>-->
+<!--                    <exclude>**/.gitkeep</exclude>-->
+<!--                </excludes>-->
+<!--            </resource>-->
+        </resources>
+        <plugins>
+            <plugin>
+                <!--
+                    使用SpringBoot 打包插件，并且将lib和resources目录打包至和jar包同级目录。
+                    因此JVM启动参数中需要添加：-Dloader.path=./lib,./resources
+                        从而通过PropertiesLauncher加载外部的依赖和资源文件
+                 -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.maven.plugs.version}</version>
+                <configuration>
+                    <!-- 指定Main方法 -->
+                    <mainClass>cn.hhh.server.HdApplication</mainClass>
+                    <!-- 使用了 PropertiesLauncher -->
+                    <layout>ZIP</layout>
+                    <!-- 通过include 设置一个不存在的来排除jar包中所有的外部依赖 -->
+                    <includes>
+                        <include>
+                            <groupId>nothing</groupId>
+                            <artifactId>nothing</artifactId>
+                        </include>
+                    </includes>
+                    <!-- 自定义jar包输出路径 -->
+                    <outputDirectory>${output.path}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--repackage：重新打包现有的 JAR 和 WAR 包，以便可以使用 java -jar 命令行来运行。-->
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 跳过单元测试，不然打包的时候会因为加载不了application.yml报错 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugs.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <!-- Maven清除插件，用于清理自定义输出的target目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven.clean.plugs.version}</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${output.path}</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+            <!--cope依赖包到外部lib目录下-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugs.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-lib</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${output.path}/lib</outputDirectory>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 拷贝资源文件 外面的resource目录-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.plugs.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 资源文件输出目录 -->
+                            <outputDirectory>${output.path}/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*-dev.yml</exclude>-->
+<!--                                        <exclude>**/*-prod.yml</exclude>-->
+<!--                                        <exclude>**/*-test.yml</exclude>-->
+<!--                                    </excludes>-->
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

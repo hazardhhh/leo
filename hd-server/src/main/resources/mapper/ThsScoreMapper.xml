@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hhh.server.mapper.ThsScoreMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ThsScoreResultMap" type="cn.hhh.server.entity.dto.ThsScoreDto">
+        <id column="stock_code" property="stockCode"/>
+        <result column="stock_name" property="stockName"/>
+        <result column="sw_first" property="swFirst"/>
+        <result column="sw_second" property="swSecond"/>
+        <result column="corp_attr" property="corpAttr"/>
+        <result column="dividend_12" property="dividend12"/>
+        <result column="dividend_2022" property="dividend2022"/>
+        <result column="dividend_2021" property="dividend2021"/>
+        <result column="dividend_2020" property="dividend2020"/>
+        <result column="dividend_average_3" property="dividendAverage3"/>
+        <result column="PB" property="PB"/>
+        <result column="turnover_rate_by_week" property="turnoverRateByWeek"/>
+        <result column="free_flow_market_value" property="freeFlowMarketValue"/>
+        <result column="all_market_value" property="allMarketValue"/>
+        <result column="ROE_by_quarter" property="ROEByQuarter"/>
+        <result column="ROE_2022" property="ROE2022"/>
+        <result column="ROE_2021" property="ROE2021"/>
+        <result column="ROE_2020" property="ROE2020"/>
+        <result column="ROE_average_3" property="ROEAverage3"/>
+        <result column="revenue" property="revenue"/>
+        <result column="net_profit" property="netProfit"/>
+    </resultMap>
+
+    <select id="getThsScoreResult" resultMap="ThsScoreResultMap">
+        select * from ths_score
+    </select>
+
+    <select id="getThsScoreResultByStockCode" resultType="cn.hhh.server.entity.dto.ThsScoreDto">
+        select * from ths_score where stock_code = #{stockCode}
+    </select>
+
+    <update id="updateThsScoreDividend12">
+        update ths_score set dividend_12 = #{dividend12} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreDividend">
+        update ths_score set dividend_2021 = #{dividend2021}, dividend_2020 = #{dividend2020}, dividend_average_3 = #{dividendAverage3} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScorePB">
+        update ths_score set PB = #{PB} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreTurnoverRateByWeek">
+        update ths_score set turnover_rate_by_Week = #{turnoverRateByWeek} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreMarketValue">
+        update ths_score set free_flow_market_value = #{freeFlowMarketValue}, all_market_value = #{allMarketValue} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreROEByQuarter">
+        update ths_score set ROE_by_quarter = #{ROEByQuarter} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreROE">
+        update ths_score set ROE_2022 = #{ROE2022}, ROE_2021 = #{ROE2021}, ROE_2020 = #{ROE2020}, ROE_average_3 = #{ROEAverage3} where stock_code = #{stockCode}
+    </update>
+
+    <update id="updateThsScoreRevenueAndNetProfit">
+        update ths_score set revenue = #{revenue}, net_profit = #{netProfit} where stock_code = #{stockCode}
+    </update>
+
+</mapper>
