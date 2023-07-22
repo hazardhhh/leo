@@ -59,7 +59,7 @@ public class Swagger3Config {
 
         return SecurityContext.builder()
                 .securityReferences(Collections.singletonList(reference))
-                .forPaths(PathSelectors.regex("(?!/hd/login).*")) // 排除/hd/login路径
+                .forPaths(PathSelectors.regex("(?!.*\\/login$).*")) // 排除以 /**/login 结尾的路径
                 .build();
     }
 

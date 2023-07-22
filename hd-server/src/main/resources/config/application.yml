@@ -29,7 +29,7 @@ spring:
     serialization:
       write-dates-as-timestamps: true #日期返回时间戳
   application:
-    name: license-server
+    name: hd
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
