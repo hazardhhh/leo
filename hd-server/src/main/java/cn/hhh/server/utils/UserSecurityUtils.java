@@ -49,7 +49,7 @@ public class UserSecurityUtils extends ServiceImpl<UserMapper, UserDto> {
         }
 
         // 从jwt payload中取出 subject 转换成 userId
-        String userId = decoded.getSubject();
+        Long userId = Long.parseLong(decoded.getSubject());
 
         //设置到请求中
         request.setAttribute(CommonConst.USERID_ATTR, userId);

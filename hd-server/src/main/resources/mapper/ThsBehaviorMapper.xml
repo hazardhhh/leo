@@ -14,19 +14,19 @@
     </resultMap>
 
     <select id="getThsBehaviorResultByDateAndType" resultMap="ThsBehaviorResultMap">
-        SELECT * FROM ths_behavior WHERE `date` = #{date} AND type = #{type}
+        SELECT * FROM ths_behavior WHERE date = #{date} AND type = #{type}
     </select>
 
     <select id="getThsBehaviorResultByTypeOfWeek" resultMap="ThsBehaviorResultMap">
-        SELECT * FROM ths_behavior WHERE `date` BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND CURDATE() AND type = #{type}
+        SELECT * FROM ths_behavior WHERE date::timestamp BETWEEN CURRENT_DATE - INTERVAL '1 WEEK' AND CURRENT_DATE AND type = #{type}
     </select>
 
     <select id="getThsBehaviorResultByTypeOfMonth" resultMap="ThsBehaviorResultMap">
-        SELECT * FROM ths_behavior WHERE `date` BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE() AND type = #{type}
+        SELECT * FROM ths_behavior WHERE date::timestamp BETWEEN CURRENT_DATE - INTERVAL '1 MONTH' AND CURRENT_DATE AND type = #{type}
     </select>
 
     <insert id="insertThsBehavior" parameterType="cn.hhh.server.entity.dto.ThsBehaviorDto">
-        INSERT INTO ths_behavior (`date`, `rank`, stock_code, stock_name, DDE_net, DDE_BBD, type)
+        INSERT INTO ths_behavior (date, rank, stock_code, stock_name, DDE_net, DDE_BBD, type)
         VALUES (#{date}, #{rank}, #{stockCode}, #{stockName}, #{DDENet}, #{DDEBBD}, #{type})
     </insert>
 

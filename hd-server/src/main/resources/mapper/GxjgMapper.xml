@@ -20,14 +20,10 @@
     <select id="getGxjgResultDetails" resultMap="GxjgResultMap">
         SELECT * FROM gxjg
         WHERE
-        <choose>
-            <when test="time == 1">
-                YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE())
-            </when>
-            <when test="time == 2">
-                YEAR(date) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND MONTH(date) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-            </when>
-        </choose>
+        CASE
+            WHEN #{time} = 1 THEN EXTRACT(YEAR FROM date::timestamp) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(MONTH FROM date::timestamp) = EXTRACT(MONTH FROM CURRENT_DATE)
+            WHEN #{time} = 2 THEN EXTRACT(YEAR FROM date::timestamp) = EXTRACT(YEAR FROM (CURRENT_DATE - INTERVAL '1 MONTH')) AND EXTRACT(MONTH FROM date::timestamp) = EXTRACT(MONTH FROM (CURRENT_DATE - INTERVAL '1 MONTH'))
+        END
         AND stock_code = #{stockCode}
     </select>
 

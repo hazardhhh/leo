@@ -53,44 +53,42 @@
     </select>
 
     <select id="getThsMemoirResultByWeek" resultMap="ThsMemoirResultMap">
-        SELECT * FROM ths_memoir WHERE STR_TO_DATE(investment_rate_date_new, '%Y/%m/%d') > DATE_SUB(NOW(), INTERVAL 7 DAY)
+        SELECT * FROM ths_memoir WHERE TO_DATE(investment_rate_date_new, 'YYYY/MM/DD') > CURRENT_DATE - INTERVAL '7 DAY'
     </select>
 
     <select id="getThsMemoirResultByMonth" resultMap="ThsMemoirResultMap">
-        SELECT * FROM ths_memoir WHERE investment_rate_date_new > DATE_SUB(NOW(), INTERVAL 1 MONTH)
+        SELECT * FROM ths_memoir WHERE TO_DATE(investment_rate_date_new, 'YYYY/MM/DD') > CURRENT_DATE - INTERVAL '1 MONTH'
     </select>
 
     <insert id="insertMemoir" parameterType="cn.hhh.server.entity.dto.ThsMemoirDto" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO ths_memoir (stock_code, stock_name, research_organization, researchers, report_type, report_name, report_pages,
-               investment_rate_new, investment_rate_pre, investment_rate_adjust_direction, investment_rate_target_price, investment_rate_research_digest,
-               investment_rate_date_new, eps1, eps2, eps3, eps4, eps_predict_date, esp_increase_rate1, esp_increase_rate2, esp_increase_rate3,
-               per_share_net_profit_increase_rate1, per_share_net_profit_increase_rate2, per_share_net_profit_increase_rate3, PE1, PE2, PE3, PE4,
-               PEG1, PEG2, PEG3, net_profit1, net_profit2, net_profit3, net_profit4, revenue1, revenue2, revenue3, revenue4,stock_price_data_new, date)
-        VALUES (#{stockCode}, #{stockName}, #{researchOrganization}, #{researchers}, #{reportType}, #{reportName}, #{reportPages}, #{investmentRateNew},
-                #{investmentRatePre}, #{investmentRateAdjustDirection}, #{investmentRateTargetPrice}, #{investmentRateResearchDigest}, #{investmentRateDateNew},
-                #{eps1}, #{eps2}, #{eps3}, #{eps4}, #{epsPredictDate}, #{espIncreaseRate1}, #{espIncreaseRate2}, #{espIncreaseRate3}, #{perShareNetProfitIncreaseRate1},
-                #{perShareNetProfitIncreaseRate2}, #{perShareNetProfitIncreaseRate3}, #{PE1}, #{PE2}, #{PE3}, #{PE4}, #{PEG1}, #{PEG2}, #{PEG3}, #{netProfit1}, #{netProfit2},
-                #{netProfit3}, #{netProfit4}, #{revenue1}, #{revenue2}, #{revenue3}, #{revenue4}, #{stockPriceDataNew}, #{date})
+        INSERT INTO ths_memoir (stock_code, stock_name, research_organization, researchers, report_type, report_name,
+                report_pages, investment_rate_new, investment_rate_pre, investment_rate_adjust_direction, investment_rate_target_price,
+                investment_rate_research_digest, investment_rate_date_new, eps1, eps2, eps3, eps4, eps_predict_date, esp_increase_rate1,
+                esp_increase_rate2, esp_increase_rate3, per_share_net_profit_increase_rate1, per_share_net_profit_increase_rate2,
+                per_share_net_profit_increase_rate3, PE1, PE2, PE3, PE4, PEG1, PEG2, PEG3, net_profit1, net_profit2, net_profit3,
+                net_profit4, revenue1, revenue2, revenue3, revenue4, stock_price_data_new, date)
+        VALUES (#{stockCode}, #{stockName}, #{researchOrganization}, #{researchers}, #{reportType}, #{reportName}, #{reportPages},
+                #{investmentRateNew}, #{investmentRatePre}, #{investmentRateAdjustDirection}, #{investmentRateTargetPrice}, #{investmentRateResearchDigest},
+                #{investmentRateDateNew}, #{eps1}, #{eps2}, #{eps3}, #{eps4}, #{epsPredictDate}, #{espIncreaseRate1}, #{espIncreaseRate2}, #{espIncreaseRate3},
+                #{perShareNetProfitIncreaseRate1}, #{perShareNetProfitIncreaseRate2}, #{perShareNetProfitIncreaseRate3}, #{PE1}, #{PE2}, #{PE3}, #{PE4},
+                #{PEG1}, #{PEG2}, #{PEG3}, #{netProfit1}, #{netProfit2}, #{netProfit3}, #{netProfit4}, #{revenue1}, #{revenue2}, #{revenue3}, #{revenue4},
+                #{stockPriceDataNew}, #{date})
     </insert>
 
     <select id="getThsMemoirResultDetails" resultMap="ThsMemoirResultMap">
         SELECT * FROM ths_memoir
         WHERE
-        <choose>
-            <when test="time == 1">
-                STR_TO_DATE(investment_rate_date_new, '%Y/%m/%d') > DATE_SUB(NOW(), INTERVAL 7 DAY)
-            </when>
-            <when test="time == 2">
-                investment_rate_date_new > DATE_SUB(NOW(), INTERVAL 1 MONTH)
-            </when>
-        </choose>
+        CASE
+            WHEN #{time} = 1 THEN TO_DATE(investment_rate_date_new, 'YYYY/MM/DD') > CURRENT_DATE - INTERVAL '7 DAY'
+            WHEN #{time} = 2 THEN investment_rate_date_new::timestamp > CURRENT_DATE - INTERVAL '1 MONTH'
+        END
+        AND stock_code = #{stockCode}
         <if test="isDepthReport">
-            AND report_pages > 20
+            AND report_pages::integer > 20
         </if>
         <if test="isFirstRecommend">
             AND (report_name LIKE '%首次覆盖%' OR investment_rate_research_digest LIKE '%首次覆盖%')
         </if>
-        AND stock_code = #{stockCode}
     </select>
 
 </mapper>

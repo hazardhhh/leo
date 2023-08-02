@@ -26,53 +26,53 @@ public class ThsController {
     @Autowired
     private ThsService thsService;
 
-    @PostMapping("/updateThsScoreDividend12Data")
-    @ApiOperation(value = "更新股息率近12个月")
-    public BasicServiceModel<Object> updateThsScoreDividend12Data() {
-        return thsService.updateThsScoreDividend12Data();
-    }
+//    @PostMapping("/updateThsScoreDividend12Data")
+//    @ApiOperation(value = "更新股息率近12个月")
+//    public BasicServiceModel<Object> updateThsScoreDividend12Data() {
+//        return thsService.updateThsScoreDividend12Data();
+//    }
 
-    @PostMapping("/updateThsScoreDividendData")
-    @ApiOperation(value = "更新股息率2021,2020,过去3年平均值")
-    public BasicServiceModel<Object> updateThsScoreDividendData() {
-        return thsService.updateThsScoreDividendData();
-    }
+//    @PostMapping("/updateThsScoreDividendData")
+//    @ApiOperation(value = "更新股息率2021,2020,过去3年平均值")
+//    public BasicServiceModel<Object> updateThsScoreDividendData() {
+//        return thsService.updateThsScoreDividendData();
+//    }
 
-    @PostMapping("/updateThsScorePBData")
-    @ApiOperation(value = "更新PB最新")
-    public BasicServiceModel<Object> updateThsScorePBData() {
-        return thsService.updateThsScorePBData();
-    }
+//    @PostMapping("/updateThsScorePBData")
+//    @ApiOperation(value = "更新PB最新")
+//    public BasicServiceModel<Object> updateThsScorePBData() {
+//        return thsService.updateThsScorePBData();
+//    }
 
-    @PostMapping("/updateThsScoreTurnoverRateByWeekData")
-    @ApiOperation(value = "更新周换手率")
-    public BasicServiceModel<Object> updateThsScoreTurnoverRateByWeekData() {
-        return thsService.updateThsScoreTurnoverRateByWeekData();
-    }
+//    @PostMapping("/updateThsScoreTurnoverRateByWeekData")
+//    @ApiOperation(value = "更新周换手率")
+//    public BasicServiceModel<Object> updateThsScoreTurnoverRateByWeekData() {
+//        return thsService.updateThsScoreTurnoverRateByWeekData();
+//    }
 
-    @PostMapping("/updateThsScoreMarketValueData")
-    @ApiOperation(value = "更新自由流通市值,总市值")
-    public BasicServiceModel<Object> updateThsScoreMarketValueData() {
-        return thsService.updateThsScoreMarketValueData();
-    }
+//    @PostMapping("/updateThsScoreMarketValueData")
+//    @ApiOperation(value = "更新自由流通市值,总市值")
+//    public BasicServiceModel<Object> updateThsScoreMarketValueData() {
+//        return thsService.updateThsScoreMarketValueData();
+//    }
 
-    @PostMapping("/updateThsScoreROEByQuarterData")
-    @ApiOperation(value = "更新ROE最新季度")
-    public BasicServiceModel<Object> updateThsScoreROEByQuarterData() {
-        return thsService.updateThsScoreROEByQuarterData();
-    }
+//    @PostMapping("/updateThsScoreROEByQuarterData")
+//    @ApiOperation(value = "更新ROE最新季度")
+//    public BasicServiceModel<Object> updateThsScoreROEByQuarterData() {
+//        return thsService.updateThsScoreROEByQuarterData();
+//    }
 
-    @PostMapping("/updateThsScoreROEData")
-    @ApiOperation(value = "更新ROE2022,2021,2020,过去3年平均值")
-    public BasicServiceModel<Object> updateThsScoreROEData() {
-        return thsService.updateThsScoreROEData();
-    }
+//    @PostMapping("/updateThsScoreROEData")
+//    @ApiOperation(value = "更新ROE2022,2021,2020,过去3年平均值")
+//    public BasicServiceModel<Object> updateThsScoreROEData() {
+//        return thsService.updateThsScoreROEData();
+//    }
 
-    @PostMapping("/updateThsScoreRevenueAndNetProfitData")
-    @ApiOperation(value = "更新营收增速,净利增速最新季度")
-    public BasicServiceModel<Object> updateThsScoreRevenueAndNetProfitData() {
-        return thsService.updateThsScoreRevenueAndNetProfitData();
-    }
+//    @PostMapping("/updateThsScoreRevenueAndNetProfitData")
+//    @ApiOperation(value = "更新营收增速,净利增速最新季度")
+//    public BasicServiceModel<Object> updateThsScoreRevenueAndNetProfitData() {
+//        return thsService.updateThsScoreRevenueAndNetProfitData();
+//    }
 
     @PostMapping("/rankScore")
     @ApiOperation(value = "计算排名百分比及打分")
@@ -81,12 +81,12 @@ public class ThsController {
         return thsService.rankScore(getRankScoreVo, response);
     }
 
-    @PostMapping("/thsTest")
-    @ApiOperation(value = "测试接口")
-    @ApiImplicitParam(value = "请求流水id", name = "tid", paramType = "query", dataTypeClass = String.class)
-    public BasicServiceModel<Object> thsTest() {
-        return thsService.thsTest();
-    }
+//    @PostMapping("/thsTest")
+//    @ApiOperation(value = "测试接口")
+//    @ApiImplicitParam(value = "请求流水id", name = "tid", paramType = "query", dataTypeClass = String.class)
+//    public BasicServiceModel<Object> thsTest() {
+//        return thsService.thsTest();
+//    }
 
 //    @PostMapping("/insertThsMemoir")
 //    @ApiOperation(value = "新增同花顺预测评级,机构预测明细表")
@@ -115,11 +115,11 @@ public class ThsController {
         return thsService.getSellerStudieDataDetailsByGxjg(getSellerStudieDetailsByGxjgVo);
     }
 
-    @PostMapping("/updateDictSwData")
-    @ApiOperation(value = "更新申万所属行业字典")
-    public BasicServiceModel<Object> updateDictSwData() {
-        return thsService.updateDictSwData();
-    }
+//    @PostMapping("/updateDictSwData")
+//    @ApiOperation(value = "更新申万所属行业字典")
+//    public BasicServiceModel<Object> updateDictSwData() {
+//        return thsService.updateDictSwData();
+//    }
 
 //    @PostMapping("/insertThsBehavior")
 //    @ApiOperation(value = "新增同花顺用户行为统计表")

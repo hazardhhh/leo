@@ -32,16 +32,16 @@ spring:
     name: hd
   # 数据源配置
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://127.0.0.1:3306/hhh?useSSL=false&serverTimezone=GMT
-    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
-    username: root
+#    url: jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT
+#    username: root
 #    password: 111111
-    password: 51985993+H
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://175.27.187.50:5432/cjdb
-#    username: cjopr
-#    password: SxMmm$A~fM9wFd6#
+#    password: 51985993+H
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://175.27.187.50:5432/cjdb?useSSL=false&serverTimezone=GMT
+    username: cjopr
+    password: SxMmm$A~fM9wFd6#
     hikari:
       # 连接池名
       pool-name: HdDataHikari

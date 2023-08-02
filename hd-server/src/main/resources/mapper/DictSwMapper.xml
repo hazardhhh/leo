@@ -12,12 +12,15 @@
     </resultMap>
 
     <update id="updateDictSw">
-        update dict_sw set first_industry = #{firstIndustry}, second_industry = #{secondIndustry}, third_industry = #{thirdIndustry}
-        where stock_code = #{stockCode}
+        UPDATE dict_sw
+        SET first_industry = #{firstIndustry},
+            second_industry = #{secondIndustry},
+            third_industry = #{thirdIndustry}
+        WHERE stock_code = #{stockCode}
     </update>
 
     <select id="getSwIndustry" resultMap="DictSwResultMap">
-        select * from dict_sw
+        SELECT * FROM dict_sw
     </select>
 
 </mapper>

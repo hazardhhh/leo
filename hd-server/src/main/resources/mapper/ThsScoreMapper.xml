@@ -28,43 +28,43 @@
     </resultMap>
 
     <select id="getThsScoreResult" resultMap="ThsScoreResultMap">
-        select * from ths_score
+        SELECT * FROM ths_score
     </select>
 
     <select id="getThsScoreResultByStockCode" resultType="cn.hhh.server.entity.dto.ThsScoreDto">
-        select * from ths_score where stock_code = #{stockCode}
+        SELECT * FROM ths_score WHERE stock_code = #{stockCode}
     </select>
 
     <update id="updateThsScoreDividend12">
-        update ths_score set dividend_12 = #{dividend12} where stock_code = #{stockCode}
+        UPDATE ths_score SET dividend_12 = #{dividend12} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreDividend">
-        update ths_score set dividend_2021 = #{dividend2021}, dividend_2020 = #{dividend2020}, dividend_average_3 = #{dividendAverage3} where stock_code = #{stockCode}
+        UPDATE ths_score SET dividend_2021 = #{dividend2021}, dividend_2020 = #{dividend2020}, dividend_average_3 = #{dividendAverage3} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScorePB">
-        update ths_score set PB = #{PB} where stock_code = #{stockCode}
+        UPDATE ths_score SET PB = #{PB} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreTurnoverRateByWeek">
-        update ths_score set turnover_rate_by_Week = #{turnoverRateByWeek} where stock_code = #{stockCode}
+        UPDATE ths_score SET turnover_rate_by_Week = #{turnoverRateByWeek} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreMarketValue">
-        update ths_score set free_flow_market_value = #{freeFlowMarketValue}, all_market_value = #{allMarketValue} where stock_code = #{stockCode}
+        UPDATE ths_score SET free_flow_market_value = #{freeFlowMarketValue}, all_market_value = #{allMarketValue} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreROEByQuarter">
-        update ths_score set ROE_by_quarter = #{ROEByQuarter} where stock_code = #{stockCode}
+        UPDATE ths_score SET ROE_by_quarter = #{ROEByQuarter} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreROE">
-        update ths_score set ROE_2022 = #{ROE2022}, ROE_2021 = #{ROE2021}, ROE_2020 = #{ROE2020}, ROE_average_3 = #{ROEAverage3} where stock_code = #{stockCode}
+        UPDATE ths_score SET ROE_2022 = #{ROE2022}, ROE_2021 = #{ROE2021}, ROE_2020 = #{ROE2020}, ROE_average_3 = #{ROEAverage3} WHERE stock_code = #{stockCode}
     </update>
 
     <update id="updateThsScoreRevenueAndNetProfit">
-        update ths_score set revenue = #{revenue}, net_profit = #{netProfit} where stock_code = #{stockCode}
+        UPDATE ths_score SET revenue = #{revenue}, net_profit = #{netProfit} WHERE stock_code = #{stockCode}
     </update>
 
 </mapper>

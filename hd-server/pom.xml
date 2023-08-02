@@ -16,6 +16,7 @@
     <properties>
         <java.version>8</java.version>
         <mysql.version>8.0.33</mysql.version>
+        <postgresql.version>42.2.2</postgresql.version>
         <mybatis-plus.version>3.3.1.tmp</mybatis-plus.version>
         <mybatisPlusExt.version>3.5.2-EXT144</mybatisPlusExt.version>
         <swagger.version>3.0.0</swagger.version>
@@ -93,6 +94,13 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
+        </dependency>
+
+        <!-- postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
 
         <!-- commons-pool2 对象池依赖 -->

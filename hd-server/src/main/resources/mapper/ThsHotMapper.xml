@@ -16,11 +16,11 @@
     </resultMap>
 
     <select id="getThsHotResultByDate" resultMap="ThsHotResultMap">
-        SELECT * FROM ths_hot WHERE `date` = #{date}
+        SELECT * FROM ths_hot WHERE date = #{date}
     </select>
 
     <insert id="insertBatchThsHot" parameterType="java.util.List">
-        INSERT INTO ths_hot (stock_code, stock_name, `date`, hot, visit_hot, search_hot, option_hot, focus_tack)
+        INSERT INTO ths_hot (stock_code, stock_name, date, hot, visit_hot, search_hot, option_hot, focus_tack)
         VALUES
         <foreach collection="list" item="hot" separator=",">
             (#{hot.stockCode}, #{hot.stockName}, #{hot.date}, #{hot.hot}, #{hot.visitHot}, #{hot.searchHot},#{hot.optionHot}, #{hot.focusTack})
@@ -31,36 +31,36 @@
         SELECT
             stock_code,
             stock_name,
-            AVG(hot) AS hot,
-            AVG(visit_hot) AS visit_hot,
-            AVG(search_hot) AS search_hot,
-            AVG(option_hot) AS option_hot,
-            AVG(focus_tack) AS focus_tack
+            AVG(CASE WHEN hot = '--' THEN 0 ELSE hot::numeric END) AS hot,
+            AVG(CASE WHEN visit_hot = '--' THEN 0 ELSE visit_hot::numeric END) AS visit_hot,
+            AVG(CASE WHEN search_hot = '--' THEN 0 ELSE search_hot::numeric END) AS search_hot,
+            AVG(CASE WHEN option_hot = '--' THEN 0 ELSE option_hot::numeric END) AS option_hot,
+            AVG(CASE WHEN focus_tack = '--' THEN 0 ELSE focus_tack::numeric END) AS focus_tack
         FROM
             ths_hot
         WHERE
-            date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+            date::timestamp >= CURRENT_DATE - INTERVAL '1 WEEK'
         GROUP BY
             stock_code,
-            stock_name;
+            stock_name
     </select>
 
     <select id="getThsHotAVGResultByMonth" resultMap="ThsHotResultMap">
         SELECT
             stock_code,
             stock_name,
-            AVG(hot) AS hot,
-            AVG(visit_hot) AS visit_hot,
-            AVG(search_hot) AS search_hot,
-            AVG(option_hot) AS option_hot,
-            AVG(focus_tack) AS focus_tack
+            AVG(CASE WHEN hot = '--' THEN 0 ELSE hot::numeric END) AS hot,
+            AVG(CASE WHEN visit_hot = '--' THEN 0 ELSE visit_hot::numeric END) AS visit_hot,
+            AVG(CASE WHEN search_hot = '--' THEN 0 ELSE search_hot::numeric END) AS search_hot,
+            AVG(CASE WHEN option_hot = '--' THEN 0 ELSE option_hot::numeric END) AS option_hot,
+            AVG(CASE WHEN focus_tack = '--' THEN 0 ELSE focus_tack::numeric END) AS focus_tack
         FROM
             ths_hot
         WHERE
-            date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+            date::timestamp >= CURRENT_DATE - INTERVAL '1 MONTH'
         GROUP BY
             stock_code,
-            stock_name;
+            stock_name
     </select>
 
 </mapper>
