@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hhh.server.mapper.ThsInvestorActivitiesDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ThsInvestorActivitiesDetailResultMap" type="cn.hhh.server.entity.dto.ThsInvestorActivitiesDetailDto">
+        <id column="id" property="id"/>
+        <result column="activities_id" property="activitiesId"/>
+        <result column="participate_unit" property="participateUnit"/>
+        <result column="participate_unit_type" property="participateUnitType"/>
+        <result column="participants" property="participants"/>
+        <result column="status" property="status"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+</mapper>

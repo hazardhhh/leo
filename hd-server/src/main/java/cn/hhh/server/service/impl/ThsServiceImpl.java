@@ -3,6 +3,8 @@ package cn.hhh.server.service.impl;
 import Ths.JDIBridge;
 import cn.hhh.server.common.BasicServiceModel;
 import cn.hhh.server.constant.ResultConst;
+import cn.hhh.server.entity.res.ths.SellerStudieRes;
+import cn.hhh.server.entity.res.ths.ThsBehaviorAndHotRankRes;
 import cn.hhh.server.page.BasicPage;
 import cn.hhh.server.page.BasicPageRes;
 import cn.hhh.server.entity.dto.*;
@@ -36,7 +38,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @Description ThsScoreServiceImpl实现类
+ * @Description ThsScoreServiceImpl
  * @Author HHH
  * @Date 2023/5/19 22:50
  */
@@ -526,7 +528,7 @@ public class ThsServiceImpl implements ThsService {
                             .toArray(String[]::new);
                     String stockCodesStr = String.join(",", stockCodes);
                     //更新ROE最新季度
-                    String ROEByQuarterResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_sq_net_asset_yield_roe_stock", ThsScoreUtils.getQuarterDate(new Date()));
+                    String ROEByQuarterResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_sq_net_asset_yield_roe_stock", ThsScoreUtils.getQuarterDate(new Date(), 1));
                     JSONObject jsonObjectROEByQuarter = JSON.parseObject(ROEByQuarterResult);
                     JSONArray tablesROEByQuarter = jsonObjectROEByQuarter.getJSONArray("tables");
                     JSONArray ROEByQuarterRates = new JSONArray();
@@ -722,7 +724,7 @@ public class ThsServiceImpl implements ThsService {
                             .toArray(String[]::new);
                     String stockCodesStr = String.join(",", stockCodes);
                     //营收增速最新季度
-                    String revenueResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_or_yoy_stock", ThsScoreUtils.getQuarterDate(new Date()));
+                    String revenueResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_or_yoy_stock", ThsScoreUtils.getQuarterDate(new Date(), 1));
                     JSONObject jsonObjectRevenue = JSON.parseObject(revenueResult);
                     JSONArray tablesRevenue = jsonObjectRevenue.getJSONArray("tables");
                     JSONArray revenueRates = new JSONArray();
@@ -743,7 +745,7 @@ public class ThsServiceImpl implements ThsService {
                         }
                     }
                     //净利增速最新季度
-                    String netProfitResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_np_yoy_stock", ThsScoreUtils.getQuarterDate(new Date()));
+                    String netProfitResult = JDIBridge.THS_BasicData(stockCodesStr,"ths_np_yoy_stock", ThsScoreUtils.getQuarterDate(new Date(), 1));
                     JSONObject jsonObjectNetProfit = JSON.parseObject(netProfitResult);
                     JSONArray tablesNetProfit = jsonObjectNetProfit.getJSONArray("tables");
                     JSONArray netProfitRates = new JSONArray();
@@ -1376,7 +1378,7 @@ public class ThsServiceImpl implements ThsService {
         log.info("ThsScoreServiceImpl | getSellerStudieData | sellerStudieReq = {}", getSellerStudieVo);
         List<ThsMemoirDto> memoirResListByWeek = thsMemoirMapper.getThsMemoirResultByWeek();
         List<ThsMemoirDto> memoirResListByMonth = thsMemoirMapper.getThsMemoirResultByMonth();
-        List<DictSwDto> swIndustry = dictSwMapper.getSwIndustry();
+        List<DictSwDto> swIndustry = dictSwMapper.getSwIndustryAndEnterpriseAttributes();
         List<SellerStudieRes> sellerStudieResList = new ArrayList<>();
         Map<String, String> depthStuideStockNameMap = new HashMap<>();
         Map<String, String> firstStudieStockNameMap = new HashMap<>();

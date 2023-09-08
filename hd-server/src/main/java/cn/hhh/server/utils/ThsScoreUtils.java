@@ -22,7 +22,7 @@ public class ThsScoreUtils {
      * @param currentDate
      * @return
      */
-    public static String getQuarterDate(Date currentDate) {
+    public static String getQuarterDate(Date currentDate, int type) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
         int year = cal.get(Calendar.YEAR);
@@ -48,7 +48,12 @@ public class ThsScoreUtils {
         }
 
         Date quarterEndDate = cal.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = null;
+        if (type == 1) {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        } else if (type == 2) {
+            dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        }
         log.info("ThsScoreFunc | getQuarterDate | 最新季度时间 = {}", dateFormat.format(quarterEndDate));
         return dateFormat.format(quarterEndDate);
     }
@@ -133,6 +138,112 @@ public class ThsScoreUtils {
         } else if (pct <= 0.8) {
             return 3;
         } else if (pct <= 0.9) {
+            return 2;
+        } else if (pct <= 1.0) {
+            return 1;
+        } else {
+            // 这个else是特使得空值置空。如果在上面else，则空值可能也给最大值
+            return null;
+        }
+    }
+
+    /**
+     * 20档评分函数
+     *
+     * @param pct
+     * @return
+     */
+    public static Integer industryRankPct20(Double pct) {
+        if (pct <= 0.05) {
+            return 1;
+        } else if (pct <= 0.1) {
+            return 2;
+        } else if (pct <= 0.15) {
+            return 3;
+        } else if (pct <= 0.2) {
+            return 4;
+        } else if (pct <= 0.25) {
+            return 5;
+        } else if (pct <= 0.3) {
+            return 6;
+        } else if (pct <= 0.35) {
+            return 7;
+        } else if (pct <= 0.4) {
+            return 8;
+        } else if (pct <= 0.45) {
+            return 9;
+        } else if (pct <= 0.5) {
+            return 10;
+        } else if (pct <= 0.55) {
+            return 11;
+        } else if (pct <= 0.6) {
+            return 12;
+        } else if (pct <= 0.65) {
+            return 13;
+        } else if (pct <= 0.7) {
+            return 14;
+        } else if (pct <= 0.75) {
+            return 15;
+        } else if (pct <= 0.8) {
+            return 16;
+        } else if (pct <= 0.85) {
+            return 17;
+        } else if (pct <= 0.9) {
+            return 18;
+        } else if (pct <= 0.95) {
+            return 19;
+        } else if (pct <= 1.0) {
+            return 20;
+        } else {
+            // 这个else是特使得空值置空。如果在上面else，则空值可能也给最大值
+            return null;
+        }
+    }
+
+    /**
+     * 20档评分函数取反
+     *
+     * @param pct
+     * @return
+     */
+    public static Integer reIndustryRankPct20(Double pct) {
+        if (pct <= 0.05) {
+            return 20;
+        } else if (pct <= 0.1) {
+            return 19;
+        } else if (pct <= 0.15) {
+            return 18;
+        } else if (pct <= 0.2) {
+            return 17;
+        } else if (pct <= 0.25) {
+            return 16;
+        } else if (pct <= 0.3) {
+            return 15;
+        } else if (pct <= 0.35) {
+            return 14;
+        } else if (pct <= 0.4) {
+            return 13;
+        } else if (pct <= 0.45) {
+            return 12;
+        } else if (pct <= 0.5) {
+            return 11;
+        } else if (pct <= 0.55) {
+            return 10;
+        } else if (pct <= 0.6) {
+            return 9;
+        } else if (pct <= 0.65) {
+            return 8;
+        } else if (pct <= 0.7) {
+            return 7;
+        } else if (pct <= 0.75) {
+            return 6;
+        } else if (pct <= 0.8) {
+            return 5;
+        } else if (pct <= 0.85) {
+            return 4;
+        } else if (pct <= 0.9) {
+            return 3;
+        } else if (pct <= 0.95) {
             return 2;
         } else if (pct <= 1.0) {
             return 1;
@@ -228,7 +339,7 @@ public class ThsScoreUtils {
         String dateString = "2011-04-01";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse(dateString);
-        System.out.println(getQuarterDate(date));
+        System.out.println(getQuarterDate(date, 1));
         System.out.println(industryRankPct10(2.0));
     }
 

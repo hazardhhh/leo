@@ -16,7 +16,7 @@ public interface ThsHotMapper {
      *
      * @return
      */
-    public List<ThsHotDto> getThsHotResultByDate(String date);
+    List<ThsHotDto> getThsHotResultByDate(String date);
 
     /**
      * 批量新增同花顺个股人气表
@@ -24,20 +24,20 @@ public interface ThsHotMapper {
      * @param thsHotDtoList
      * @return
      */
-    public int insertBatchThsHot(List<ThsHotDto> thsHotDtoList);
+    int insertBatchThsHot(List<ThsHotDto> thsHotDtoList);
 
     /**
      * 获取所有一周平均值结果
      *
      * @return
      */
-    public List<ThsHotDto> getThsHotAVGResultByWeek();
+    List<ThsHotDto> getThsHotAVGResultByWeek();
 
     /**
      * 获取所有一月平均值结果
      *
      * @return
      */
-    public List<ThsHotDto> getThsHotAVGResultByMonth();
+    List<ThsHotDto> getThsHotAVGResultByMonth();
 
 }

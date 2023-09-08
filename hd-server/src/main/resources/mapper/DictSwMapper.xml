@@ -9,6 +9,7 @@
         <result column="first_industry" property="firstIndustry"/>
         <result column="second_industry" property="secondIndustry"/>
         <result column="third_industry" property="thirdIndustry"/>
+        <result column="enterprise_attributes" property="enterpriseAttributes"/>
     </resultMap>
 
     <update id="updateDictSw">
@@ -19,7 +20,7 @@
         WHERE stock_code = #{stockCode}
     </update>
 
-    <select id="getSwIndustry" resultMap="DictSwResultMap">
+    <select id="getSwIndustryAndEnterpriseAttributes" resultMap="DictSwResultMap">
         SELECT * FROM dict_sw
     </select>
 

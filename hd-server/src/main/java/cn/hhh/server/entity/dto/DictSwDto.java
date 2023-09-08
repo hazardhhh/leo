@@ -32,4 +32,7 @@ public class DictSwDto {
     @ApiModelProperty(value = "三级行业")
     private String thirdIndustry;
 
+    @ApiModelProperty(value = "企业属性")
+    private String enterpriseAttributes;
+
 }

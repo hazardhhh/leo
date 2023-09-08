@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @Description ThsScoreService服务类
+ * @Description ThsScoreService
  * @Author HHH
  * @Date 2023/5/19 22:48
  */

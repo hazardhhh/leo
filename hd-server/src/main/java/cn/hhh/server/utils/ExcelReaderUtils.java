@@ -114,10 +114,10 @@ public class ExcelReaderUtils {
     }
 
     public static void main(String[] args) {
-        String fileName = "F:\\国信金工\\【国信金工】7月券商金股统计_48家.xlsx";
-        String url = "jdbc:mysql://39.108.142.123:3306/hhh?useSSL=false&serverTimezone=GMT";
-        String user = "root";
-        String password = "51985993+H";
+        String fileName = "F:\\国信金工\\【国信金工】8月券商金股统计_47家.xlsx";
+        String url = "jdbc:postgresql://175.27.187.50:5432/cjdb?useSSL=false&serverTimezone=GMT";
+        String user = "cjopr";
+        String password = "SxMmm$A~fM9wFd6#";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {

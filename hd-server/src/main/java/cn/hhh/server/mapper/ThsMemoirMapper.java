@@ -16,21 +16,21 @@ public interface ThsMemoirMapper {
      *
      * @return
      */
-    public List<ThsMemoirDto> getThsMemoirResultByDate(String investmentRateDateNew);
+    List<ThsMemoirDto> getThsMemoirResultByDate(String investmentRateDateNew);
 
     /**
      * 获取所有结果,最近一周
      *
      * @return
      */
-    public List<ThsMemoirDto> getThsMemoirResultByWeek();
+    List<ThsMemoirDto> getThsMemoirResultByWeek();
 
     /**
      * 获取所有结果,最近一个月
      *
      * @return
      */
-    public List<ThsMemoirDto> getThsMemoirResultByMonth();
+    List<ThsMemoirDto> getThsMemoirResultByMonth();
 
     /**
      * 新增同花顺预测评级,机构预测明细表
@@ -38,7 +38,7 @@ public interface ThsMemoirMapper {
      * @param memoirResList
      * @return
      */
-    public int insertMemoir(ThsMemoirDto memoirResList);
+    int insertMemoir(ThsMemoirDto memoirResList);
 
 
     /**
@@ -50,6 +50,6 @@ public interface ThsMemoirMapper {
      * @param stockCode 证券代码
      * @return
      */
-    public List<ThsMemoirDto> getThsMemoirResultDetails(int time, boolean isDepthReport, boolean isFirstRecommend, String stockCode);
+    List<ThsMemoirDto> getThsMemoirResultDetails(int time, boolean isDepthReport, boolean isFirstRecommend, String stockCode);
 
 }

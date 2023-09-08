@@ -29,6 +29,7 @@
         <fastjson.version>2.0.10</fastjson.version>
         <hutool.version>5.8.7</hutool.version>
         <vavr.version>0.10.2</vavr.version>
+        <jedis.version>3.1.0</jedis.version>
         <output.path>../target/${project.parent.artifactId}</output.path>
         <!-- 打包插件版本 -->
         <spring.maven.plugs.version>2.3.0.RELEASE</spring.maven.plugs.version>
@@ -197,6 +198,13 @@
             <groupId>com.hhh</groupId>
             <artifactId>ths-sdk</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <!-- REDIS -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
         </dependency>
 
     </dependencies>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hhh.server.mapper.ThsStockDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ThsStockDetailsResultMap" type="cn.hhh.server.entity.dto.ThsStockDetailsDto">
+        <id column="id" property="id"/>
+        <result column="data_type" property="dataType"/>
+        <result column="fund_code" property="fundCode"/>
+        <result column="fund_name" property="fundName"/>
+        <result column="date" property="date"/>
+        <result column="stock_code" property="stockCode"/>
+        <result column="stock_name" property="stockName"/>
+        <result column="market_value" property="marketValue"/>
+        <result column="investment_type" property="investmentType"/>
+        <result column="company" property="company"/>
+        <result column="status" property="status"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="getMutualFundCountByTopTenMap" type="java.util.HashMap">
+        <id property="stockCode" column="stock_code"/>
+        <result property="getMutualFundCountByTopTen" column="getMutualFundCountByTopTen"/>
+    </resultMap>
+
+    <resultMap id="getMutualFundCountMap" type="java.util.HashMap">
+        <id property="stockCode" column="stock_code"/>
+        <result property="getMutualFundCount" column="getMutualFundCount"/>
+    </resultMap>
+
+    <select id="getMutualFundCountByTopTen" resultMap="getMutualFundCountByTopTenMap">
+        SELECT stock_code, COUNT(fund_code) AS getMutualFundCountByTopTen
+        FROM ths_stock_details
+        WHERE date::date = CAST(#{dataTime} AS DATE)
+        GROUP BY stock_code
+    </select>
+
+    <select id="getMutualFundCount" resultMap="getMutualFundCountMap">
+        SELECT stock_code, COUNT(fund_code) AS getMutualFundCount
+        FROM ths_stock_details
+        WHERE date::date &gt;= (date_trunc('month', #{dataTime}::date)::date - INTERVAL '6 months')
+        AND date::date &lt;= #{dataTime}::date
+        GROUP BY stock_code;
+    </select>
+
+</mapper>

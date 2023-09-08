@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hhh.server.mapper.ThsStockMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ThsStockResultMap" type="cn.hhh.server.entity.dto.ThsStockDto">
+        <id column="id" property="id"/>
+        <result column="ths_stock_code" property="thsStockCode"/>
+        <result column="stock_code" property="stockCode"/>
+        <result column="stock_name" property="stockName"/>
+        <result column="stock_short_name" property="stockShortName"/>
+        <result column="corp_nature" property="corpNature"/>
+
+        <result column="first_citic_industry_code" property="firstCiticIndustryCode"/>
+        <result column="first_citic_industry" property="firstCiticIndustry"/>
+        <result column="second_citic_industry_code" property="secondCiticIndustryCode"/>
+        <result column="second_citic_industry" property="secondCiticIndustry"/>
+        <result column="third_citic_industry_code" property="thirdCiticIndustryCode"/>
+        <result column="third_citic_industry" property="thirdCiticIndustry"/>
+
+        <result column="first_sw_industry_code" property="firstSwIndustryCode"/>
+        <result column="first_sw_industry" property="firstSwIndustry"/>
+        <result column="second_sw_industry_code" property="secondSwIndustryCode"/>
+        <result column="second_sw_industry" property="secondSwIndustry"/>
+        <result column="third_sw_industry_code" property="thirdSwIndustryCode"/>
+        <result column="third_sw_industry" property="thirdSwIndustry"/>
+
+        <result column="first_cjs_industry_code" property="firstCjsIndustryCode"/>
+        <result column="first_cjs_industry" property="firstCjsIndustry"/>
+        <result column="second_cjs_industry_code" property="secondCjsIndustryCode"/>
+        <result column="second_cjs_industry" property="secondCjsIndustry"/>
+        <result column="third_cjs_industry_code" property="thirdCjsIndustryCode"/>
+        <result column="third_cjs_industry" property="thirdCjsIndustry"/>
+        <result column="fourth_cjs_industry_code" property="fourthCjsIndustryCode"/>
+        <result column="fourth_cjs_industry" property="fourthCjsIndustry"/>
+
+        <result column="first_ths_industry_code" property="firstThsIndustryCode"/>
+        <result column="first_ths_industry" property="firstThsIndustry"/>
+        <result column="second_ths_industry_code" property="secondThsIndustryCode"/>
+        <result column="second_ths_industry" property="secondThsIndustry"/>
+        <result column="third_ths_industry_code" property="thirdThsIndustryCode"/>
+        <result column="third_ths_industry" property="thirdThsIndustry"/>
+
+        <result column="status" property="status"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getAllStockCode" resultType="java.lang.String">
+        SELECT ths_stock_code FROM ths_stock
+    </select>
+
+    <select id="getResult" resultMap="ThsStockResultMap">
+        SELECT * FROM ths_stock
+    </select>
+
+    <select id="getBuyerAttentionResult" resultMap="ThsStockResultMap">
+        SELECT ths_stock_code, stock_name, first_sw_industry, second_sw_industry, third_sw_industry, corp_nature FROM ths_stock
+    </select>
+
+</mapper>

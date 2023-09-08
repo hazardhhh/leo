@@ -20,13 +20,13 @@ public interface DictSwMapper {
      * @param thirdIndustry
      * @return
      */
-    public int updateDictSw(String stockCode, String firstIndustry, String secondIndustry, String thirdIndustry);
+    int updateDictSw(String stockCode, String firstIndustry, String secondIndustry, String thirdIndustry);
 
     /**
-     * 获取申万一级行业
+     * 获取申万行业及企业属性
      *
      * @return
      */
-    public List<DictSwDto> getSwIndustry();
+    List<DictSwDto> getSwIndustryAndEnterpriseAttributes();
 
 }

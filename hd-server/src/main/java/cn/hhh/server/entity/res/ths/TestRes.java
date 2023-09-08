@@ -1,4 +1,4 @@
-package cn.hhh.server.entity.vo.ths;
+package cn.hhh.server.entity.res.ths;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
